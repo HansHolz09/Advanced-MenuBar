@@ -16,7 +16,9 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import dev.hansholz.advancedmenubar.DefaultMacMenuBar
+import dev.hansholz.advancedmenubar.MacNativeTextContextMenu
 import dev.hansholz.advancedmenubar.MenuBarLanguage
+import dev.hansholz.advancedmenubar.NativeTextContextMenuProvider
 import org.jetbrains.skiko.hostOs
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -76,6 +78,8 @@ fun main() = application {
                 val checkboxItem2 = remember { mutableStateOf(true) }
                 val checkboxItem3 = remember { mutableStateOf(true) }
 
+                val isDark = remember { mutableStateOf(false) }
+
                 val textFieldState = rememberTextFieldState()
 
                 key(focusTrigger, language.value) {
@@ -100,17 +104,31 @@ fun main() = application {
                     }
                 }
 
-                App(
-                    language = language,
-                    clickedItems = clickedItems,
-                    customMenus = customMenus,
-                    selectedMenu = selectedMenu,
-                    checkboxItem1 = checkboxItem1,
-                    checkboxItem2 = checkboxItem2,
-                    checkboxItem3 = checkboxItem3,
-                    textFieldState = textFieldState
+                NativeTextContextMenuProvider(
+                    isDark = isDark.value,
+                    customActions = listOf(
+                        MacNativeTextContextMenu.MenuAction(
+                            label = "Custom Context Item",
+                            systemImageName = "contextualmenu.and.pointer.arrow",
+                        ) { clickedItems += "Custom Context Item" },
+                        MacNativeTextContextMenu.MenuAction(
+                            label = "Second Custom Context Item",
+                        ) { clickedItems += "Second Custom Context Item" },
+                    )
                 ) {
-                    windows += "Sample Window ${windows.size + 1}" to true
+                    App(
+                        language = language,
+                        clickedItems = clickedItems,
+                        customMenus = customMenus,
+                        selectedMenu = selectedMenu,
+                        checkboxItem1 = checkboxItem1,
+                        checkboxItem2 = checkboxItem2,
+                        checkboxItem3 = checkboxItem3,
+                        isDark = isDark,
+                        textFieldState = textFieldState
+                    ) {
+                        windows += "Sample Window ${windows.size + 1}" to true
+                    }
                 }
             }
         }
