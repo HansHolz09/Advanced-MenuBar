@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.input.insert
 import androidx.compose.foundation.text.input.selectAll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,10 +35,10 @@ import composeadvancedmenubar.sample.generated.resources.website
 import dev.hansholz.advancedmenubar.CompatibilityMenuBar
 import dev.hansholz.advancedmenubar.MenuIcon.SFSymbol
 import dev.hansholz.advancedmenubar.MenuVisibility
-import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -63,6 +64,11 @@ fun FrameWindowScope.MenuBar(
             isFullscreen = window.placement == WindowPlacement.Fullscreen
         }
     })
+
+    val canUndo by remember { derivedStateOf { textFieldState.undoState.canUndo } }
+    val canRedo by remember { derivedStateOf { textFieldState.undoState.canRedo } }
+    val selectionCollapsed by remember { derivedStateOf { textFieldState.selection.collapsed } }
+    val textIsNotEmpty by remember { derivedStateOf { textFieldState.text.isNotEmpty() } }
 
     CompatibilityMenuBar {
         MacApplicationMenu {
@@ -106,21 +112,21 @@ fun FrameWindowScope.MenuBar(
             FilePrint { onClick("Print") }
         }
         EditMenu {
-            Undo(enabled = textFieldState.undoState.canUndo) {
+            Undo(enabled = canUndo) {
                 textFieldState.undoState.undo()
             }
-            Redo(enabled = textFieldState.undoState.canRedo) {
+            Redo(enabled = canRedo) {
                 textFieldState.undoState.redo()
             }
             Separator()
-            Cut(enabled = !textFieldState.selection.collapsed) {
+            Cut(enabled = !selectionCollapsed) {
                 val sel = textFieldState.selection
                 if (!sel.collapsed) {
                     clipboard.setText(AnnotatedString(textFieldState.text.substring(sel.start, sel.end)))
                     textFieldState.edit { delete(sel.start, sel.end) }
                 }
             }
-            Copy(enabled = !textFieldState.selection.collapsed) {
+            Copy(enabled = !selectionCollapsed) {
                 val sel = textFieldState.selection
                 if (!sel.collapsed) {
                     clipboard.setText(AnnotatedString(textFieldState.text.substring(sel.start, sel.end)))
@@ -136,11 +142,11 @@ fun FrameWindowScope.MenuBar(
                 }
             }
             PasteAndMatchStyle(enabled = false) {}
-            Delete(enabled = !textFieldState.selection.collapsed) {
+            Delete(enabled = !selectionCollapsed) {
                 val sel = textFieldState.selection
                 if (!sel.collapsed) textFieldState.edit { delete(sel.start, sel.end) }
             }
-            SelectAll(enabled = textFieldState.text.isNotEmpty()) {
+            SelectAll(enabled = textIsNotEmpty) {
                 textFieldState.edit { selectAll() }
             }
         }

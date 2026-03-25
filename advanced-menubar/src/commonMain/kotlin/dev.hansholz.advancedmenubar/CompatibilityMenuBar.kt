@@ -2,6 +2,7 @@ package dev.hansholz.advancedmenubar
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.MenuScope
@@ -123,10 +124,10 @@ import dev.hansholz.advancedmenubar.MacCocoaMenuBar.SystemItem
 import dev.hansholz.advancedmenubar.MacCocoaMenuBar.TopMenu
 import dev.hansholz.advancedmenubar.MacCocoaMenuBar.ViewStd
 import dev.hansholz.advancedmenubar.MacCocoaMenuBar.WindowStd
+import javax.swing.SwingUtilities
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.skiko.hostOs
-import javax.swing.SwingUtilities
 
 @Composable
 fun FrameWindowScope.CompatibilityMenuBar(
@@ -144,9 +145,14 @@ fun FrameWindowScope.CompatibilityMenuBar(
     val model = scope.menus.toList()
 
     if (hostOs.isMacOS) {
+        val lastUpdate = remember { object { var time = 0L } }
         LaunchedEffect(model) {
-            SwingUtilities.invokeLater {
-                MacCocoaMenuBar.rebuildMenuBar(model)
+            val now = System.currentTimeMillis()
+            if (now - lastUpdate.time > 250) {
+                lastUpdate.time = now
+                SwingUtilities.invokeLater {
+                    MacCocoaMenuBar.rebuildMenuBar(model)
+                }
             }
         }
     } else {

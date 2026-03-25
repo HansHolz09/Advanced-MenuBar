@@ -120,9 +120,9 @@ import dev.hansholz.advancedmenubar.MacCocoaMenuBar.SystemItem
 import dev.hansholz.advancedmenubar.MacCocoaMenuBar.TopMenu
 import dev.hansholz.advancedmenubar.MacCocoaMenuBar.ViewStd
 import dev.hansholz.advancedmenubar.MacCocoaMenuBar.WindowStd
+import javax.swing.SwingUtilities
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import javax.swing.SwingUtilities
 
 @DslMarker
 annotation class MenuDsl
@@ -133,14 +133,20 @@ fun AdvancedMacMenuBar(appName: String, content: AdvancedMacMenuScope.() -> Unit
         it.value to stringResource(it.value, appName)
     }
 
-    val scope = remember { AdvancedMacMenuScope(strings) }
-    scope.reset()
-    scope.content()
+    val scope = AdvancedMacMenuScope(strings).apply {
+        reset()
+        content()
+    }
+    val model = scope.menus.toList()
 
-    val model = remember(scope.menus.toList()) { scope.menus.toList() }
+    val lastUpdate = remember { object { var time = 0L } }
     LaunchedEffect(model) {
-        SwingUtilities.invokeLater {
-            MacCocoaMenuBar.rebuildMenuBar(model)
+        val now = System.currentTimeMillis()
+        if (now - lastUpdate.time > 250) {
+            lastUpdate.time = now
+            SwingUtilities.invokeLater {
+                MacCocoaMenuBar.rebuildMenuBar(model)
+            }
         }
     }
 }
