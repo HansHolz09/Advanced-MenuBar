@@ -49,13 +49,13 @@ import java.util.*
 @Composable
 fun App(
     language: MutableState<MenuBarLanguage?>,
+    isDark: MutableState<Boolean>,
     clickedItems: List<String>,
     customMenus: SnapshotStateList<Int>,
     selectedMenu: MutableState<Int>,
     checkboxItem1: MutableState<Boolean>,
     checkboxItem2: MutableState<Boolean>,
     checkboxItem3: MutableState<Boolean>,
-    isDark: MutableState<Boolean>,
     textFieldState: TextFieldState,
     onNewWindow: () -> Unit,
 ) {

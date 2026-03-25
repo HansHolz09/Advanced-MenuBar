@@ -21,6 +21,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 fun main() = application {
     val language = remember { mutableStateOf<MenuBarLanguage?>(null) }
+    val isDark = remember { mutableStateOf(false) }
 
     val windows = remember { mutableStateListOf("Sample" to true) }
     windows.forEachIndexed { index, (title, visible) ->
@@ -62,8 +63,6 @@ fun main() = application {
                 val checkboxItem2 = remember { mutableStateOf(true) }
                 val checkboxItem3 = remember { mutableStateOf(true) }
 
-                val isDark = remember { mutableStateOf(false) }
-
                 val textFieldState = rememberTextFieldState()
 
                 key(language.value) {
@@ -102,13 +101,13 @@ fun main() = application {
                 ) {
                     App(
                         language = language,
+                        isDark = isDark,
                         clickedItems = clickedItems,
                         customMenus = customMenus,
                         selectedMenu = selectedMenu,
                         checkboxItem1 = checkboxItem1,
                         checkboxItem2 = checkboxItem2,
                         checkboxItem3 = checkboxItem3,
-                        isDark = isDark,
                         textFieldState = textFieldState
                     ) {
                         windows += "Sample Window ${windows.size + 1}" to true
