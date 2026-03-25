@@ -20,7 +20,7 @@ fun FrameWindowScope.FullMacMenuBar() {
             Quit()
         }
 
-        MacFileMenu {
+        FileMenu {
             FileNew {}
             FileOpen {}
             FileOpenRecent {
@@ -41,7 +41,7 @@ fun FrameWindowScope.FullMacMenuBar() {
             FilePrint {}
         }
 
-        MacEditMenu {
+        EditMenu {
             Undo {}
             Redo {}
             Separator()
@@ -86,7 +86,7 @@ fun FrameWindowScope.FullMacMenuBar() {
             }
         }
 
-        MacFormatMenu {
+        FormatMenu {
             FontMenu {
                 ShowFonts()
                 Bold {}
@@ -126,7 +126,7 @@ fun FrameWindowScope.FullMacMenuBar() {
             }
         }
 
-        MacViewMenu {
+        ViewMenu {
             ShowToolbar(false) {}
             CustomizeToolbar {}
             Separator()
@@ -136,7 +136,7 @@ fun FrameWindowScope.FullMacMenuBar() {
             ToggleFullScreen(false)
         }
 
-        MacWindowMenu {
+        WindowMenu {
             Close()
             Minimize()
             MinimizeAll()
@@ -150,7 +150,7 @@ fun FrameWindowScope.FullMacMenuBar() {
             BringAllToFront()
         }
 
-        MacHelpMenu {
+        HelpMenu {
             AppHelp()
         }
     }

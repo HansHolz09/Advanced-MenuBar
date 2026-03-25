@@ -72,19 +72,19 @@ fun FrameWindowScope.MenuBar(
 
     CompatibilityMenuBar {
         MacApplicationMenu {
-            About(macIcon = SFSymbol("info.circle")) { onClick("About") }
+            About(icon = SFSymbol("info.circle")) { onClick("About") }
             Separator()
             Item(
                 title = getString(Res.string.check_for_updates),
-                macIcon = SFSymbol("arrow.down.app"),
-                macSubtitle = "${getString(Res.string.available_version)}: 1.0.0",
-                macTooltip = "Changelog:\n- First big new Feature\n- Fixed a big security issue\n- Many little bugfixes and stability improvements",
-                macBadge = getString(Res.string.new_update_available)
+                icon = SFSymbol("arrow.down.app"),
+                subtitle = "${getString(Res.string.available_version)}: 1.0.0",
+                tooltip = "Changelog:\n- First big new Feature\n- Fixed a big security issue\n- Many little bugfixes and stability improvements",
+                badge = getString(Res.string.new_update_available)
             ) {
                 onClick("Check for Updates")
             }
             Separator()
-            Settings(macIcon = SFSymbol("gear")) { onClick("Settings") }
+            Settings(icon = SFSymbol("gear")) { onClick("Settings") }
             Separator()
             Services()
             Separator()
@@ -98,8 +98,8 @@ fun FrameWindowScope.MenuBar(
             FileNew { onClick("New File") }
             FileOpen { onClick("Open File")}
             FileOpenRecent {
-                Item("PDF_01", macIcon = SFSymbol("doc.richtext")) { onClick("PDF_01") }
-                Item("Picture_02", macIcon = SFSymbol("photo")) { onClick("Picture_02") }
+                Item("PDF_01", icon = SFSymbol("doc.richtext")) { onClick("PDF_01") }
+                Item("Picture_02", icon = SFSymbol("photo")) { onClick("Picture_02") }
                 Separator()
                 FileClearRecent { onClick("Clear Recent Files") }
             }

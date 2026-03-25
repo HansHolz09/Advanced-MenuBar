@@ -8,9 +8,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.WindowPlacement
 import dev.hansholz.advancedmenubar.MenuIcon.SFSymbol
-import org.jetbrains.skiko.hostOs
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
+import org.jetbrains.skiko.hostOs
 
 @Composable
 fun FrameWindowScope.DefaultMacMenuBar(
@@ -53,7 +53,7 @@ fun FrameWindowScope.DefaultMacMenuBar(
         }
 
         if (viewMenu) {
-            MacViewMenu {
+            ViewMenu {
                 ToggleFullScreen(
                     state = isFullscreen,
                     icon = if (majorVersion >= 26) {
@@ -68,7 +68,7 @@ fun FrameWindowScope.DefaultMacMenuBar(
         }
 
         if (windowMenu) {
-            MacWindowMenu {
+            WindowMenu {
                 Minimize()
                 Zoom()
                 Separator()
@@ -77,7 +77,7 @@ fun FrameWindowScope.DefaultMacMenuBar(
         }
 
         if (helpMenu) {
-            MacHelpMenu {
+            HelpMenu {
                 onHelpClick?.let {
                     AppHelp(onClick = it)
                 }

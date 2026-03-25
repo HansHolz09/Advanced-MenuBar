@@ -15,12 +15,12 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import dev.hansholz.advancedmenubar.ContextMenuAction
 import dev.hansholz.advancedmenubar.DefaultMacMenuBar
-import dev.hansholz.advancedmenubar.MacNativeTextContextMenu
 import dev.hansholz.advancedmenubar.MenuBarLanguage
 import dev.hansholz.advancedmenubar.NativeTextContextMenuProvider
-import org.jetbrains.skiko.hostOs
 import kotlin.uuid.ExperimentalUuidApi
+import org.jetbrains.skiko.hostOs
 
 @OptIn(ExperimentalUuidApi::class)
 fun main() = application {
@@ -107,11 +107,11 @@ fun main() = application {
                 NativeTextContextMenuProvider(
                     isDark = isDark.value,
                     customActions = listOf(
-                        MacNativeTextContextMenu.MenuAction(
+                        ContextMenuAction(
                             label = "Custom Context Item",
                             systemImageName = "contextualmenu.and.pointer.arrow",
                         ) { clickedItems += "Custom Context Item" },
-                        MacNativeTextContextMenu.MenuAction(
+                        ContextMenuAction(
                             label = "Second Custom Context Item",
                         ) { clickedItems += "Second Custom Context Item" },
                     )
