@@ -43,8 +43,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.hansholz.advancedmenubar.MenuBarLanguage
+import java.util.Locale
 import org.jetbrains.skiko.hostOs
-import java.util.*
 
 @Composable
 fun App(
@@ -141,7 +141,7 @@ fun App(
                         modifier = Modifier.padding(top = 15.dp)
                     ) {
                         OutlinedTextField(
-                            value = language.value?.tag?.let { Locale(it).displayName } ?: "Default",
+                            value = language.value?.tag?.let { Locale.of(it).displayName } ?: "Default",
                             onValueChange = {},
                             modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                             readOnly = true,
@@ -156,7 +156,7 @@ fun App(
                         ) {
                             MenuBarLanguage.entries.forEach { entry ->
                                 DropdownMenuItem(
-                                    text = { Text("${Locale(entry.tag).displayName} (${entry.tag})") },
+                                    text = { Text("${Locale.of(entry.tag).displayName} (${entry.tag})") },
                                     onClick = {
                                         language.value = entry
                                         I18n.switchTo(entry.tag)

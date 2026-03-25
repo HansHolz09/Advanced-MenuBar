@@ -33,6 +33,7 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "Advanced-Menubar Sample"
             packageVersion = "1.0.0"
+            jvmArgs += "--enable-native-access=ALL-UNNAMED"
             macOS {
                 dockName = "Advanced-Menubar Sample"
             }
