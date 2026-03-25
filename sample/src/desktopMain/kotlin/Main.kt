@@ -1,12 +1,9 @@
 
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isCtrlPressed
@@ -20,7 +17,6 @@ import dev.hansholz.advancedmenubar.DefaultMacMenuBar
 import dev.hansholz.advancedmenubar.MenuBarLanguage
 import dev.hansholz.advancedmenubar.NativeTextContextMenuProvider
 import kotlin.uuid.ExperimentalUuidApi
-import org.jetbrains.skiko.hostOs
 
 @OptIn(ExperimentalUuidApi::class)
 fun main() = application {
@@ -57,18 +53,6 @@ fun main() = application {
                     rootPane.putClientProperty("apple.awt.windowTitleVisible", true)
                 }
 
-                var focusTrigger by remember { mutableStateOf(false) }
-                if (hostOs.isMacOS) {
-                    DisposableEffect(window) {
-                        val listener = object : java.awt.event.WindowFocusListener {
-                            override fun windowGainedFocus(e: java.awt.event.WindowEvent?) { focusTrigger = !focusTrigger }
-                            override fun windowLostFocus(e: java.awt.event.WindowEvent?) {}
-                        }
-                        window.addWindowFocusListener(listener)
-                        onDispose { window.removeWindowFocusListener(listener) }
-                    }
-                }
-
                 val clickedItems = remember { mutableStateListOf<String>() }
                 val customMenus = remember { mutableStateListOf(1) }
 
@@ -82,7 +66,7 @@ fun main() = application {
 
                 val textFieldState = rememberTextFieldState()
 
-                key(focusTrigger, language.value) {
+                key(language.value) {
                     when (selectedMenu.value) {
                         0 ->
                             MenuBar(
