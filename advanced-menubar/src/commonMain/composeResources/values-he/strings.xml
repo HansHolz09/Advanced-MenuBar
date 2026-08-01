@@ -26,7 +26,7 @@
     <string name="edit_cut">גזירה</string>
     <string name="edit_copy">העתקה</string>
     <string name="edit_paste">הדבקה</string>
-    <string name="paste_and_match_style">הדבקה והתאמה לסגנון</string>
+    <string name="paste_and_match_style">‏הדבקה והתאמה לסגנון</string>
     <string name="edit_delete">מחיקה</string>
     <string name="edit_select_all">בחירת הכול</string>
     <string name="find">חיפוש</string>
@@ -92,7 +92,7 @@
     <string name="window">חלון</string>
     <string name="window_close">סגירת החלון</string>
     <string name="window_minimize">מזעור</string>
-    <string name="window_minimize_all">הקטנת כולם</string>
+    <string name="window_minimize_all">מזעור כל החלונות</string>
     <string name="window_zoom">זום</string>
     <string name="bring_all_to_front">הבאת כל החלונות קדימה</string>
     <string name="show_next_tab">הצגת הכרטיסיה הבאה</string>

@@ -35,7 +35,7 @@
     <string name="find_next">Buscar Seguinte</string>
     <string name="find_previous">Buscar Anterior</string>
     <string name="use_selection_for_find">Usar Seleção para Buscar</string>
-    <string name="jump_to_selection">Saltar para Seleção</string>
+    <string name="jump_to_selection">Ir para Seleção</string>
     <string name="spelling_and_grammar">Ortografia e Gramática</string>
     <string name="toggle_correct_spelling_automatically">Corrigir Ortografia Automaticamente</string>
     <string name="substitutions">Substituições</string>

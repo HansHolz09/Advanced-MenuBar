@@ -4,7 +4,7 @@
     <string name="services">Dịch vụ</string>
     <string name="hide">Ẩn %1$s</string>
     <string name="hide_others">Ẩn các mục khác</string>
-    <string name="show_all">Hiển thị Tất cả</string>
+    <string name="show_all">Hiển thị tất cả</string>
     <string name="quit">Thoát %1$s</string>
     <string name="file">Tệp</string>
     <string name="file_new">Mới</string>
@@ -83,8 +83,8 @@
     <string name="show_toolbar">Hiển thị thanh công cụ</string>
     <string name="hide_toolbar">Ẩn Thanh công cụ</string>
     <string name="customize_toolbar">Tùy chỉnh thanh công cụ…</string>
-    <string name="enter_full_screen">Vào chế độ Toàn màn hình</string>
-    <string name="exit_full_screen">Thoát toàn màn hình</string>
+    <string name="enter_full_screen">Chuyển sang toàn màn hình</string>
+    <string name="exit_full_screen">Thoát Toàn Màn hình</string>
     <string name="show_sidebar">Hiển thị thanh bên</string>
     <string name="hide_sidebar">Ẩn thanh bên</string>
     <string name="show_tab_bar">Hiển thị Thanh Tab</string>
@@ -98,7 +98,7 @@
     <string name="show_next_tab">Hiển thị Tab Tiếp theo</string>
     <string name="show_previous_tab">Hiển thị Tab Trước</string>
     <string name="merge_all_windows">Nhập Tất cả Cửa sổ</string>
-    <string name="move_tab_to_new_window">Di chuyển Tab sang Cửa sổ Mới</string>
+    <string name="move_tab_to_new_window">Di chuyển tab sang cửa sổ mới</string>
     <string name="help">Trợ giúp</string>
     <string name="app_help">Trợ giúp %1$s</string>
 </resources>
