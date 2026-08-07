@@ -7,7 +7,7 @@
     <string name="show_all">Prikaži sve</string>
     <string name="quit">Zatvori %1$s</string>
     <string name="file">Datoteka</string>
-    <string name="file_new">Novi</string>
+    <string name="file_new">Nova</string>
     <string name="file_open">Otvori…</string>
     <string name="file_open_recent">Otvori nedavne stavke</string>
     <string name="file_clear_recent">Očisti izbornik</string>

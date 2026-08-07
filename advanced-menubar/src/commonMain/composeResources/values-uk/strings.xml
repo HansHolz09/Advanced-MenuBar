@@ -93,7 +93,7 @@
     <string name="window_close">Закрити вікно</string>
     <string name="window_minimize">Згорнути</string>
     <string name="window_minimize_all">Згорнути всі</string>
-    <string name="window_zoom">Масштаб</string>
+    <string name="window_zoom">Оптимізувати</string>
     <string name="bring_all_to_front">Усі наперед</string>
     <string name="show_next_tab">Показати наступну вкладку</string>
     <string name="show_previous_tab">Показати попередню вкладку</string>
