@@ -1,0 +1,17 @@
+<resources>
+    <string name="check_for_updates">Check for Updates</string>
+    <string name="available_version">Available Version</string>
+    <string name="new_update_available">New Update Available</string>
+    <string name="section">Section</string>
+    <string name="custom">Custom</string>
+    <string name="custom_item">Custom Item</string>
+    <string name="custom_submenu">Custom Submenu</string>
+    <string name="file">File</string>
+    <string name="disabled_item">Disabled Item</string>
+    <string name="options">Options</string>
+    <string name="checkbox_item">Checkbox Item</string>
+    <string name="release_notes">Release Notes</string>
+    <string name="resources">Resources</string>
+    <string name="website">Website</string>
+    <string name="community_forum">Community Forum</string>
+</resources>

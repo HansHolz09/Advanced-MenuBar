@@ -1,20 +1,26 @@
 [versions]
-compose-plugin = "1.10.1"
-kotlin = "2.3.10"
-material3 = "1.10.0-alpha05"
-mavenPublishVanniktech = "0.36.0"
-jna = "5.18.1"
+compose-plugin = "1.11.1"
+kotlin = "2.4.10"
+ktlint = "14.2.0"
+material3 = "1.11.0-alpha07"
+mavenPublishVanniktech = "0.37.0"
+nucleus = "2.3.2"
 
 [libraries]
-jna-core = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-plugin" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-plugin" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-plugin" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-plugin" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
+nucleus-core-runtime = { module = "dev.nucleusframework:nucleus.core-runtime", version.ref = "nucleus" }
+nucleus-decorated-window-tao = { module = "dev.nucleusframework:nucleus.decorated-window-tao", version.ref = "nucleus" }
+nucleus-graalvm-runtime = { module = "dev.nucleusframework:nucleus.graalvm-runtime", version.ref = "nucleus" }
 
 [plugins]
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 mavenPublishVanniktech = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublishVanniktech" }
+nucleus = { id = "dev.nucleusframework", version.ref = "nucleus" }

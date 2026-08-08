@@ -1,0 +1,141 @@
+import androidx.compose.runtime.Composable
+import dev.hansholz.advancedmenubar.AdvancedMacMenuBar
+import dev.hansholz.advancedmenubar.MenuIcon.SFSymbol
+import dev.nucleusframework.window.tao.TaoDecoratedWindowScope
+
+@Composable
+fun TaoDecoratedWindowScope.FullMacMenuBar(appName: String) {
+    AdvancedMacMenuBar(appName) {
+        MacApplicationMenu {
+            About()
+            Separator()
+            Settings()
+            Separator()
+            Services()
+            Separator()
+            Hide()
+            HideOthers()
+            ShowAll()
+            Separator()
+            Quit()
+        }
+        FileMenu {
+            FileNew {}
+            FileOpen {}
+            FileOpenRecent {
+                Item("PDF_01", icon = SFSymbol("doc.richtext")) {}
+                Item("Picture_02", icon = SFSymbol("photo")) {}
+                Separator()
+                FileClearRecent {}
+            }
+            Separator()
+            FileClose()
+            FileSave {}
+            FileSaveAs {}
+            FileDuplicate {}
+            FileRename {}
+            FileMoveTo {}
+            Separator()
+            FilePageSetup()
+            FilePrint {}
+        }
+        EditMenu {
+            Undo()
+            Redo()
+            Separator()
+            Cut()
+            Copy()
+            Paste()
+            PasteAndMatchStyle()
+            Delete()
+            SelectAll()
+            Separator()
+            FindMenu {
+                Find()
+                FindAndReplace()
+                FindNext()
+                FindPrevious()
+                UseSelectionForFind()
+                JumpToSelection()
+            }
+            SpellingAndGrammarMenu { ToggleCorrectSpellingAutomatically {} }
+            SubstitutionsMenu {
+                ToggleSmartQuotes {}
+                ToggleSmartDashes {}
+                ToggleSmartLinks {}
+                ToggleTextReplacement {}
+            }
+            TransformationsMenu {
+                MakeUpperCase {}
+                MakeLowerCase {}
+                Capitalize {}
+            }
+            SpeechMenu {
+                StartSpeaking {}
+                StopSpeaking {}
+            }
+        }
+        FormatMenu {
+            FontMenu {
+                ShowFonts()
+                Bold {}
+                Italic {}
+                Underline {}
+                Separator()
+                Bigger {}
+                Smaller {}
+                Separator()
+                KerningMenu {
+                    KerningStandard {}
+                    KerningNone {}
+                    KerningTighten {}
+                    KerningLoosen {}
+                }
+                LigaturesMenu {
+                    LigaturesNone {}
+                    LigaturesStandard {}
+                    LigaturesAll {}
+                }
+                BaselineMenu {
+                    BaselineStandard {}
+                    Superscript {}
+                    Subscript {}
+                    RaiseBaseline {}
+                    LowerBaseline {}
+                }
+                Separator()
+                ShowColors()
+            }
+            Separator()
+            TextMenu {
+                AlignLeft {}
+                AlignCenter {}
+                AlignJustified {}
+                AlignRight {}
+            }
+        }
+        ViewMenu {
+            ShowToolbar(false) {}
+            CustomizeToolbar {}
+            Separator()
+            ToggleSidebar(false) {}
+            ToggleTabBar(false) {}
+            Separator()
+            ToggleFullScreen(state.isFullscreen)
+        }
+        WindowMenu {
+            Close()
+            Minimize()
+            MinimizeAll()
+            Zoom()
+            Separator()
+            ShowNextTab {}
+            ShowPreviousTab {}
+            MergeAllWindows {}
+            MoveTabToNewWindow {}
+            Separator()
+            BringAllToFront()
+        }
+        HelpMenu { AppHelp() }
+    }
+}

@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 import plistlib
 
-DEFAULT_RES_ROOT = Path("advanced-menubar/src/commonMain/composeResources")
+DEFAULT_RES_ROOT = Path("advanced-menubar-core/src/main/composeResources")
 DEFAULT_BASELINE = DEFAULT_RES_ROOT / "values/strings.xml"
 
 ANCHORS = {
@@ -101,6 +101,7 @@ def write_strings_for_language(menudumper: Path, baseline: Path, out_xml: Path, 
         str(menudumper),
         "--baseline", str(baseline),
         "--out", str(out_xml),
+        "--strict",
         "-AppleLanguages", f"({lang})"
     ]
     if dry_run:

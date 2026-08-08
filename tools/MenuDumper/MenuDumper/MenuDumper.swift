@@ -71,14 +71,13 @@ enum MenuDumper {
 
             do {
                 let opts = Options.parse(CommandLine.arguments)
-                if opts.printTree { printMenuTree(mainMenu) }
-
                 let appName = mainMenu.items.first?.title ?? ProcessInfo.processInfo.processName
                 let keys = (opts.baselinePath != nil) ? extractKeysFromStringsXML(atPath: opts.baselinePath!) : defaultKeys()
 
                 let scopes = try MenuScopes(mainMenu: mainMenu)
-                
+                removeDuplicateModernEditItems(from: scopes.editMenu)
                 seedMissingStandardItems(scopes: scopes)
+                if opts.printTree { printMenuTree(mainMenu) }
 
                 let result = buildValuesAndMeta(keys: keys, scopes: scopes, appNameInMenuBar: appName)
 
@@ -121,6 +120,18 @@ enum MenuDumper {
         }
 
         tick()
+    }
+}
+
+private func removeDuplicateModernEditItems(from editMenu: NSMenu) {
+    for action in ["startDictation:", "orderFrontCharacterPalette:"] {
+        let matches = editMenu.items.filter { $0.actionName == action }
+        let systemKey = action == "startDictation:" ? "🎤" : "🌐"
+        guard let preferred = matches.first(where: { $0.keyEquivalent == systemKey })
+            ?? matches.first else { continue }
+        for duplicate in matches where duplicate !== preferred {
+            editMenu.removeItem(duplicate)
+        }
     }
 }
 
@@ -461,6 +472,21 @@ private func buildValuesAndMeta(keys: [String], scopes: MenuScopes, appNameInMen
     put("edit_paste", findFirst(scopes.editMenu, action: "paste:"), path: ["Edit"])
     put("edit_delete", findFirst(scopes.editMenu, action: "delete:"), path: ["Edit"])
     put("edit_select_all", findFirst(scopes.editMenu, action: "selectAll:"), path: ["Edit"])
+
+    if let writingTools = findContainerWithDirectChild(
+        scopes.editMenu,
+        predicate: { $0.actionName == "showWritingTools:" }
+    ) {
+        put("writing_tools", writingTools, path: ["Edit"])
+    }
+    if let autoFill = findContainerWithDirectChild(
+        scopes.editMenu,
+        predicate: { $0.actionName == "_handleInsertFromContactsCommand:" }
+    ) {
+        put("autofill", autoFill, path: ["Edit"])
+    }
+    put("start_dictation", findFirst(scopes.editMenu, action: "startDictation:"), path: ["Edit"])
+    put("emoji_and_symbols", findFirst(scopes.editMenu, action: "orderFrontCharacterPalette:"), path: ["Edit"])
     
     put("paste_and_match_style",
         findFirstAny(scopes.editMenu, actions: ["pasteAndMatchStyle:", "pasteAsPlainText:"])
@@ -778,6 +804,7 @@ private func defaultKeys() -> [String] {
         "about","settings","services","hide","hide_others","show_all","quit",
         "file","file_new","file_open","file_open_recent","file_clear_recent","file_close","file_close_all","file_save","file_save_as","file_duplicate","file_rename","file_move_to","file_page_setup","file_print",
         "edit","edit_undo","edit_redo","edit_cut","edit_copy","edit_paste","paste_and_match_style","edit_delete","edit_select_all",
+        "writing_tools","autofill","start_dictation","emoji_and_symbols",
         "find","find_dots","find_and_replace","find_next","find_previous","use_selection_for_find","jump_to_selection",
         "spelling_and_grammar","toggle_correct_spelling_automatically",
         "substitutions","toggle_smart_quotes","toggle_smart_dashes","toggle_smart_links","toggle_text_replacement",

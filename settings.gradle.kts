@@ -16,5 +16,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ComposeAdvancedMenubar"
-include(":advanced-menubar")
-include(":sample")
+include(":advanced-menubar-core")
+include(":advanced-menubar-awt")
+include(":advanced-menubar-tao")
+include(":sample-awt")
+include(":sample-tao")

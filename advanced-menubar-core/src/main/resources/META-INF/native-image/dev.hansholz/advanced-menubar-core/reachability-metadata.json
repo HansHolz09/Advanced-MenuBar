@@ -1,0 +1,24 @@
+{
+  "reflection": [
+    {
+      "type": "dev.hansholz.advancedmenubar.NativeMenuBridge",
+      "jniAccessible": true,
+      "methods": [
+        { "name": "onAction", "parameterTypes": ["long"] }
+      ]
+    },
+    {
+      "type": "dev.hansholz.advancedmenubar.NativeTextContextMenuBridge",
+      "jniAccessible": true,
+      "methods": [
+        { "name": "onAction", "parameterTypes": ["long"] },
+        { "name": "onTextChanged", "parameterTypes": ["long", "java.lang.String"] },
+        { "name": "onDismissed", "parameterTypes": [] }
+      ]
+    }
+  ],
+  "resources": [
+    { "glob": "advanced-menubar/native/**" },
+    { "glob": "composeResources/**" }
+  ]
+}

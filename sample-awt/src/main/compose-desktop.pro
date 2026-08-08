@@ -1,0 +1,3 @@
+# JNI callback entry points
+-keep class dev.hansholz.advancedmenubar.NativeMenuBridge { *; }
+-keep class dev.hansholz.advancedmenubar.NativeTextContextMenuBridge { *; }
