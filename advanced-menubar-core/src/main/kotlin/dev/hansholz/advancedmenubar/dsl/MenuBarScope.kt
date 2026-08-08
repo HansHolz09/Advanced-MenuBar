@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package dev.hansholz.advancedmenubar
 
 import composeadvancedmenubar.generated.resources.Res

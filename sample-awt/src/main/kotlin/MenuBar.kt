@@ -90,7 +90,9 @@ fun FrameWindowScope.MenuBar(
                 title = getString(Res.string.check_for_updates),
                 icon = SFSymbol("arrow.down.app"),
                 subtitle = "${getString(Res.string.available_version)}: 1.0.0",
-                tooltip = "Changelog:\n- First big new Feature\n- Fixed a big security issue\n- Many little bugfixes and stability improvements",
+                tooltip =
+                    "Changelog:\n- First big new Feature\n- Fixed a big security issue" +
+                        "\n- Many little bugfixes and stability improvements",
                 badge = getString(Res.string.new_update_available),
             ) {
                 onClick("Check for Updates")

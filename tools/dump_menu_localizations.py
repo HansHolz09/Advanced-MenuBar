@@ -101,7 +101,6 @@ def write_strings_for_language(menudumper: Path, baseline: Path, out_xml: Path, 
         str(menudumper),
         "--baseline", str(baseline),
         "--out", str(out_xml),
-        "--strict",
         "-AppleLanguages", f"({lang})"
     ]
     if dry_run:

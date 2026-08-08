@@ -524,6 +524,24 @@ static BOOL ambIsDictationItem(NSMenuItem *item) {
            [action isEqualToString:@"startDictationFromMenu:"];
 }
 
+static BOOL ambIsWritingToolsItem(NSMenuItem *item) {
+    return item.submenu != nil && ambMenuContainsAction(item.submenu, @"showWritingTools:");
+}
+
+static BOOL ambIsEmojiItem(NSMenuItem *item) {
+    return [ambActionName(item) isEqualToString:@"orderFrontCharacterPalette:"];
+}
+
+static void ambRemoveAutomaticEditItems(NSMenu *menu) {
+    for (NSMenuItem *item in menu.itemArray.copy) {
+        if (ambIsWritingToolsItem(item) || ambIsAutoFillItem(item) ||
+            ambIsDictationItem(item) || ambIsEmojiItem(item)) {
+            [menu removeItem:item];
+        }
+    }
+    ambCleanupSeparators(menu);
+}
+
 static void ambMergeAutomaticEditDuplicates(NSMenu *menu) {
     NSMutableArray<NSMenuItem *> *autoFillItems = [NSMutableArray array];
     NSMutableArray<NSMenuItem *> *dictationItems = [NSMutableArray array];
@@ -560,11 +578,16 @@ static void ambMergeAutomaticEditDuplicates(NSMenu *menu) {
 }
 
 @interface AdvancedMenubarAutomaticEditMenuDelegate : NSObject <NSMenuDelegate>
+@property(nonatomic) BOOL suppressAutomaticItems;
 @end
 
 @implementation AdvancedMenubarAutomaticEditMenuDelegate
 - (void)menuWillOpen:(NSMenu *)menu {
-    ambMergeAutomaticEditDuplicates(menu);
+    if (self.suppressAutomaticItems) {
+        ambRemoveAutomaticEditItems(menu);
+    } else {
+        ambMergeAutomaticEditDuplicates(menu);
+    }
 }
 @end
 
@@ -706,6 +729,7 @@ static int64_t ambInstallMenu(const uint8_t *bytes, size_t length) {
             NSMenu *helpMenu = nil;
             NSMenu *servicesMenu = nil;
             NSMenu *editMenu = nil;
+            BOOL suppressAutomaticEditItems = NO;
 
             for (int32_t index = 0; index < count && reader.valid; index++) {
                 int32_t kind = ambReadI32(&reader);
@@ -736,7 +760,10 @@ static int64_t ambInstallMenu(const uint8_t *bytes, size_t length) {
                     menus[(NSUInteger)index] = submenu;
                     if (kind == 3) windowMenu = submenu;
                     if (kind == 4) helpMenu = submenu;
-                    if (kind == 5) editMenu = submenu;
+                    if (kind == 5 || kind == 6) {
+                        editMenu = submenu;
+                        suppressAutomaticEditItems = kind == 6;
+                    }
                     continue;
                 }
 
@@ -780,10 +807,15 @@ static int64_t ambInstallMenu(const uint8_t *bytes, size_t length) {
             }
 
             if (!reader.valid) return;
-            if (editMenu != nil) ambAppendAutomaticEditItems(editMenu, sourceMainMenu);
+            if (editMenu != nil && !suppressAutomaticEditItems) {
+                ambAppendAutomaticEditItems(editMenu, sourceMainMenu);
+            }
             if (editMenu != nil) {
-                gAutomaticEditMenuDelegate = [[AdvancedMenubarAutomaticEditMenuDelegate alloc] init];
-                editMenu.delegate = gAutomaticEditMenuDelegate;
+                AdvancedMenubarAutomaticEditMenuDelegate *delegate =
+                    [[AdvancedMenubarAutomaticEditMenuDelegate alloc] init];
+                delegate.suppressAutomaticItems = suppressAutomaticEditItems;
+                gAutomaticEditMenuDelegate = delegate;
+                editMenu.delegate = delegate;
             }
             NSApp.mainMenu = mainMenu;
             NSApp.servicesMenu = servicesMenu;

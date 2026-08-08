@@ -10,8 +10,10 @@ TEMPLATE_HEADER = """// AUTO-GENERATED. DO NOT EDIT.
 
 package dev.hansholz.advancedmenubar
 
-enum class MenuBarLanguage(val tag: String) {"""
-TEMPLATE_FOOTER = """}"""
+enum class MenuBarLanguage(
+    val tag: String,
+) {"""
+TEMPLATE_FOOTER = """}\n"""
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -41,7 +43,7 @@ def main() -> None:
 
     for i, lang in enumerate(langs):
         name = enum_name(lang)
-        comma = "," if i < len(langs) - 1 else ""
+        comma = "," if i < len(langs) else ""
         lines.append(f"    {name}(\"{lang}\"){comma}")
 
     lines.append(TEMPLATE_FOOTER)
