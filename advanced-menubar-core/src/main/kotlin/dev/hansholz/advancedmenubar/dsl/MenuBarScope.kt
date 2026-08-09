@@ -1,3 +1,4 @@
+@file:OptIn(InternalAdvancedMenuBarApi::class)
 @file:Suppress("FunctionName")
 
 package dev.hansholz.advancedmenubar
@@ -119,8 +120,15 @@ import dev.hansholz.advancedmenubar.MenuModel.ViewStd
 import dev.hansholz.advancedmenubar.MenuModel.WindowStd
 import org.jetbrains.compose.resources.StringResource
 
+/**
+ * Receiver for the top-level Advanced MenuBar DSL.
+ *
+ * The application, File, Edit, Format, View, Window, and Help menus may each be declared once;
+ * [CustomMenu] may be declared any number of times. Use ordinary Kotlin conditions to include or
+ * remove menus in response to state.
+ */
 @MenuDsl
-class MenuBarScope(
+class MenuBarScope internal constructor(
     private val strings: List<Pair<StringResource, String>>,
 ) {
     internal val menus = mutableListOf<TopMenu>()
@@ -146,8 +154,16 @@ class MenuBarScope(
     private fun getString(stringResource: StringResource): String =
         strings.find { it.first == stringResource }?.second ?: "STRING NOT FOUND"
 
+    /**
+     * Receiver for items inside a top-level menu or submenu.
+     *
+     * Standard functions such as [Undo], [FileSave], and [ToggleFullScreen] carry native macOS
+     * selectors and localized labels. Supplying a callback overrides native behavior. Swing has no
+     * AppKit responder chain, so standard entries without callbacks are rendered disabled there.
+     * Custom [Item] and [Checkbox] entries always dispatch their supplied callbacks.
+     */
     @MenuDsl
-    class MenuScope(
+    class MenuScope internal constructor(
         private val strings: List<Pair<StringResource, String>>,
     ) {
         internal val elements = mutableListOf<MenuElement>()
@@ -155,6 +171,7 @@ class MenuBarScope(
         private fun getString(stringResource: StringResource): String =
             strings.find { it.first == stringResource }?.second ?: "STRING NOT FOUND"
 
+        /** Adds the standard About item, or invokes [onClick] instead of AppKit's About panel. */
         fun About(
             title: String = getString(Res.string.about),
             enabled: Boolean = true,
@@ -164,6 +181,7 @@ class MenuBarScope(
             elements += SystemItem.About(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard application settings/preferences item. */
         fun Settings(
             title: String = getString(Res.string.settings),
             enabled: Boolean = true,
@@ -173,10 +191,12 @@ class MenuBarScope(
             elements += SystemItem.Settings(title, enabled, icon, onClick)
         }
 
+        /** Adds the AppKit-managed Services submenu. */
         fun Services(title: String = getString(Res.string.services)) {
             elements += SystemItem.Services(title)
         }
 
+        /** Adds the standard action that hides the current application. */
         fun Hide(
             title: String = getString(Res.string.hide),
             enabled: Boolean = true,
@@ -186,6 +206,7 @@ class MenuBarScope(
             elements += SystemItem.Hide(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard action that hides other applications. */
         fun HideOthers(
             title: String = getString(Res.string.hide_others),
             enabled: Boolean = true,
@@ -195,6 +216,7 @@ class MenuBarScope(
             elements += SystemItem.HideOthers(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard action that reveals hidden applications. */
         fun ShowAll(
             title: String = getString(Res.string.show_all),
             enabled: Boolean = true,
@@ -204,6 +226,7 @@ class MenuBarScope(
             elements += SystemItem.ShowAll(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard action that terminates the application. */
         fun Quit(
             title: String = getString(Res.string.quit),
             enabled: Boolean = true,
@@ -213,6 +236,7 @@ class MenuBarScope(
             elements += SystemItem.Quit(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard New document action. */
         fun FileNew(
             title: String = getString(Res.string.file_new),
             enabled: Boolean = true,
@@ -222,6 +246,7 @@ class MenuBarScope(
             elements += FileStd.New(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Open document action. */
         fun FileOpen(
             title: String = getString(Res.string.file_open),
             enabled: Boolean = true,
@@ -231,6 +256,7 @@ class MenuBarScope(
             elements += FileStd.Open(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Open Recent submenu and builds its children with [content]. */
         fun FileOpenRecent(
             title: String = getString(Res.string.file_open_recent),
             enabled: Boolean = true,
@@ -242,6 +268,7 @@ class MenuBarScope(
             elements += FileStd.OpenRecent(title, s.elements.toList(), enabled, icon)
         }
 
+        /** Adds the standard Clear Recent action. */
         fun FileClearRecent(
             title: String = getString(Res.string.file_clear_recent),
             enabled: Boolean = true,
@@ -251,6 +278,7 @@ class MenuBarScope(
             elements += FileStd.ClearRecent(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Close document action. */
         fun FileClose(
             title: String = getString(Res.string.file_close),
             enabled: Boolean = true,
@@ -260,6 +288,7 @@ class MenuBarScope(
             elements += FileStd.Close(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Close All documents action. */
         fun FileCloseAll(
             title: String = getString(Res.string.file_close_all),
             enabled: Boolean = true,
@@ -269,6 +298,7 @@ class MenuBarScope(
             elements += FileStd.CloseAll(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Save action. */
         fun FileSave(
             title: String = getString(Res.string.file_save),
             enabled: Boolean = true,
@@ -278,6 +308,7 @@ class MenuBarScope(
             elements += FileStd.Save(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Save As action. */
         fun FileSaveAs(
             title: String = getString(Res.string.file_save_as),
             enabled: Boolean = true,
@@ -287,6 +318,7 @@ class MenuBarScope(
             elements += FileStd.SaveAs(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Duplicate document action. */
         fun FileDuplicate(
             title: String = getString(Res.string.file_duplicate),
             enabled: Boolean = true,
@@ -296,6 +328,7 @@ class MenuBarScope(
             elements += FileStd.Duplicate(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Rename document action. */
         fun FileRename(
             title: String = getString(Res.string.file_rename),
             enabled: Boolean = true,
@@ -305,6 +338,7 @@ class MenuBarScope(
             elements += FileStd.Rename(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Move To action. */
         fun FileMoveTo(
             title: String = getString(Res.string.file_move_to),
             enabled: Boolean = true,
@@ -314,6 +348,7 @@ class MenuBarScope(
             elements += FileStd.MoveTo(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Page Setup action. */
         fun FilePageSetup(
             title: String = getString(Res.string.file_page_setup),
             enabled: Boolean = true,
@@ -323,6 +358,7 @@ class MenuBarScope(
             elements += FileStd.PageSetup(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Print action. */
         fun FilePrint(
             title: String = getString(Res.string.file_print),
             enabled: Boolean = true,
@@ -332,6 +368,7 @@ class MenuBarScope(
             elements += FileStd.Print(title, enabled, icon, onClick)
         }
 
+        /** Adds Undo; callback-free native items target the focused Compose editor. */
         fun Undo(
             title: String = getString(Res.string.edit_undo),
             enabled: Boolean = true,
@@ -341,6 +378,7 @@ class MenuBarScope(
             elements += EditStd.Undo(title, enabled, icon, onClick)
         }
 
+        /** Adds Redo; callback-free native items target the focused Compose editor. */
         fun Redo(
             title: String = getString(Res.string.edit_redo),
             enabled: Boolean = true,
@@ -350,6 +388,7 @@ class MenuBarScope(
             elements += EditStd.Redo(title, enabled, icon, onClick)
         }
 
+        /** Adds Cut; callback-free native items target the focused Compose editor. */
         fun Cut(
             title: String = getString(Res.string.edit_cut),
             enabled: Boolean = true,
@@ -359,6 +398,7 @@ class MenuBarScope(
             elements += EditStd.Cut(title, enabled, icon, onClick)
         }
 
+        /** Adds Copy; callback-free native items target the focused Compose editor. */
         fun Copy(
             title: String = getString(Res.string.edit_copy),
             enabled: Boolean = true,
@@ -368,6 +408,7 @@ class MenuBarScope(
             elements += EditStd.Copy(title, enabled, icon, onClick)
         }
 
+        /** Adds Paste; callback-free native items target the focused Compose editor. */
         fun Paste(
             title: String = getString(Res.string.edit_paste),
             enabled: Boolean = true,
@@ -377,6 +418,7 @@ class MenuBarScope(
             elements += EditStd.Paste(title, enabled, icon, onClick)
         }
 
+        /** Adds Paste and Match Style. */
         fun PasteAndMatchStyle(
             title: String = getString(Res.string.paste_and_match_style),
             enabled: Boolean = true,
@@ -386,6 +428,7 @@ class MenuBarScope(
             elements += EditStd.PasteAndMatchStyle(title, enabled, icon, onClick)
         }
 
+        /** Adds Delete; callback-free native items target the focused Compose editor. */
         fun Delete(
             title: String = getString(Res.string.edit_delete),
             enabled: Boolean = true,
@@ -395,6 +438,7 @@ class MenuBarScope(
             elements += EditStd.Delete(title, enabled, icon, onClick)
         }
 
+        /** Adds Select All; callback-free native items target the focused Compose editor. */
         fun SelectAll(
             title: String = getString(Res.string.edit_select_all),
             enabled: Boolean = true,
@@ -404,6 +448,7 @@ class MenuBarScope(
             elements += EditStd.SelectAll(title, enabled, icon, onClick)
         }
 
+        /** Adds a conventionally titled Find submenu. */
         fun FindMenu(
             title: String = getString(Res.string.find),
             enabled: Boolean = true,
@@ -411,6 +456,7 @@ class MenuBarScope(
             block: MenuScope.() -> Unit,
         ) = Menu(title, enabled, icon, null, null, block)
 
+        /** Adds the standard Find action. */
         fun Find(
             title: String = getString(Res.string.find_dots),
             enabled: Boolean = true,
@@ -420,6 +466,7 @@ class MenuBarScope(
             elements += EditStd.Find(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Find and Replace action. */
         fun FindAndReplace(
             title: String = getString(Res.string.find_and_replace),
             enabled: Boolean = true,
@@ -429,6 +476,7 @@ class MenuBarScope(
             elements += EditStd.FindAndReplace(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Find Next action. */
         fun FindNext(
             title: String = getString(Res.string.find_next),
             enabled: Boolean = true,
@@ -438,6 +486,7 @@ class MenuBarScope(
             elements += EditStd.FindNext(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Find Previous action. */
         fun FindPrevious(
             title: String = getString(Res.string.find_previous),
             enabled: Boolean = true,
@@ -447,6 +496,7 @@ class MenuBarScope(
             elements += EditStd.FindPrevious(title, enabled, icon, onClick)
         }
 
+        /** Adds Use Selection for Find. */
         fun UseSelectionForFind(
             title: String = getString(Res.string.use_selection_for_find),
             enabled: Boolean = true,
@@ -456,6 +506,7 @@ class MenuBarScope(
             elements += EditStd.UseSelectionForFind(title, enabled, icon, onClick)
         }
 
+        /** Adds Jump to Selection. */
         fun JumpToSelection(
             title: String = getString(Res.string.jump_to_selection),
             enabled: Boolean = true,
@@ -465,6 +516,7 @@ class MenuBarScope(
             elements += EditStd.JumpToSelection(title, enabled, icon, onClick)
         }
 
+        /** Adds a conventionally titled Spelling and Grammar submenu. */
         fun SpellingAndGrammarMenu(
             title: String = getString(Res.string.spelling_and_grammar),
             enabled: Boolean = true,
@@ -472,6 +524,7 @@ class MenuBarScope(
             block: MenuScope.() -> Unit,
         ) = Menu(title, enabled, icon, null, null, block)
 
+        /** Adds a controlled Correct Spelling Automatically toggle. */
         fun ToggleCorrectSpellingAutomatically(
             title: String = getString(Res.string.toggle_correct_spelling_automatically),
             checked: Boolean = false,
@@ -482,6 +535,7 @@ class MenuBarScope(
             elements += EditStd.ToggleSpellingCorrection(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds a conventionally titled Substitutions submenu. */
         fun SubstitutionsMenu(
             title: String = getString(Res.string.substitutions),
             enabled: Boolean = true,
@@ -489,6 +543,7 @@ class MenuBarScope(
             block: MenuScope.() -> Unit,
         ) = Menu(title, enabled, icon, null, null, block)
 
+        /** Adds a controlled Smart Quotes toggle. */
         fun ToggleSmartQuotes(
             title: String = getString(Res.string.toggle_smart_quotes),
             checked: Boolean = false,
@@ -499,6 +554,7 @@ class MenuBarScope(
             elements += EditStd.ToggleSmartQuotes(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds a controlled Smart Dashes toggle. */
         fun ToggleSmartDashes(
             title: String = getString(Res.string.toggle_smart_dashes),
             checked: Boolean = false,
@@ -509,6 +565,7 @@ class MenuBarScope(
             elements += EditStd.ToggleSmartDashes(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds a controlled Smart Links toggle. */
         fun ToggleSmartLinks(
             title: String = getString(Res.string.toggle_smart_links),
             checked: Boolean = false,
@@ -519,6 +576,7 @@ class MenuBarScope(
             elements += EditStd.ToggleLinkDetection(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds a controlled Text Replacement toggle. */
         fun ToggleTextReplacement(
             title: String = getString(Res.string.toggle_text_replacement),
             checked: Boolean = false,
@@ -529,6 +587,7 @@ class MenuBarScope(
             elements += EditStd.ToggleTextReplacement(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds a conventionally titled Transformations submenu. */
         fun TransformationsMenu(
             title: String = getString(Res.string.transformations),
             enabled: Boolean = true,
@@ -536,6 +595,7 @@ class MenuBarScope(
             block: MenuScope.() -> Unit,
         ) = Menu(title, enabled, icon, null, null, block)
 
+        /** Adds the standard uppercase transformation. */
         fun MakeUpperCase(
             title: String = getString(Res.string.make_upper_case),
             enabled: Boolean = true,
@@ -545,6 +605,7 @@ class MenuBarScope(
             elements += EditStd.Uppercase(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard lowercase transformation. */
         fun MakeLowerCase(
             title: String = getString(Res.string.make_lower_case),
             enabled: Boolean = true,
@@ -554,6 +615,7 @@ class MenuBarScope(
             elements += EditStd.Lowercase(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard capitalization transformation. */
         fun Capitalize(
             title: String = getString(Res.string.capitalize),
             enabled: Boolean = true,
@@ -563,6 +625,7 @@ class MenuBarScope(
             elements += EditStd.Capitalize(title, enabled, icon, onClick)
         }
 
+        /** Adds a conventionally titled Speech submenu. */
         fun SpeechMenu(
             title: String = getString(Res.string.speech),
             enabled: Boolean = true,
@@ -570,6 +633,7 @@ class MenuBarScope(
             block: MenuScope.() -> Unit,
         ) = Menu(title, enabled, icon, null, null, block)
 
+        /** Adds Start Speaking. */
         fun StartSpeaking(
             title: String = getString(Res.string.start_speaking),
             enabled: Boolean = true,
@@ -579,6 +643,7 @@ class MenuBarScope(
             elements += EditStd.StartSpeaking(title, enabled, icon, onClick)
         }
 
+        /** Adds Stop Speaking. */
         fun StopSpeaking(
             title: String = getString(Res.string.stop_speaking),
             enabled: Boolean = true,
@@ -588,6 +653,7 @@ class MenuBarScope(
             elements += EditStd.StopSpeaking(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard action that opens the font panel. */
         fun ShowFonts(
             title: String = getString(Res.string.show_fonts),
             enabled: Boolean = true,
@@ -597,6 +663,7 @@ class MenuBarScope(
             elements += FormatStd.ShowFonts(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard action that opens the color panel. */
         fun ShowColors(
             title: String = getString(Res.string.show_colors),
             enabled: Boolean = true,
@@ -606,6 +673,7 @@ class MenuBarScope(
             elements += FormatStd.ShowColors(title, enabled, icon, onClick)
         }
 
+        /** Adds a conventionally titled Font submenu. */
         fun FontMenu(
             title: String = getString(Res.string.font),
             enabled: Boolean = true,
@@ -613,6 +681,7 @@ class MenuBarScope(
             block: MenuScope.() -> Unit,
         ) = Menu(title, enabled, icon, null, null, block)
 
+        /** Adds a controlled Bold formatting toggle. */
         fun Bold(
             title: String = getString(Res.string.bold),
             checked: Boolean = false,
@@ -623,6 +692,7 @@ class MenuBarScope(
             elements += FormatStd.Bold(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds a controlled Italic formatting toggle. */
         fun Italic(
             title: String = getString(Res.string.italic),
             checked: Boolean = false,
@@ -633,6 +703,7 @@ class MenuBarScope(
             elements += FormatStd.Italic(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds a controlled Underline formatting toggle. */
         fun Underline(
             title: String = getString(Res.string.underline),
             checked: Boolean = false,
@@ -643,6 +714,7 @@ class MenuBarScope(
             elements += FormatStd.Underline(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds the standard Make Text Bigger action. */
         fun Bigger(
             title: String = getString(Res.string.bigger),
             enabled: Boolean = true,
@@ -652,6 +724,7 @@ class MenuBarScope(
             elements += FormatStd.Bigger(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Make Text Smaller action. */
         fun Smaller(
             title: String = getString(Res.string.smaller),
             enabled: Boolean = true,
@@ -661,6 +734,7 @@ class MenuBarScope(
             elements += FormatStd.Smaller(title, enabled, icon, onClick)
         }
 
+        /** Adds a conventionally titled Kerning submenu. */
         fun KerningMenu(
             title: String = getString(Res.string.kerning),
             enabled: Boolean = true,
@@ -668,6 +742,7 @@ class MenuBarScope(
             block: MenuScope.() -> Unit,
         ) = Menu(title, enabled, icon, null, null, block)
 
+        /** Adds Use Standard Kerning. */
         fun KerningStandard(
             title: String = getString(Res.string.kerning_standard),
             enabled: Boolean = true,
@@ -677,6 +752,7 @@ class MenuBarScope(
             elements += FormatStd.KerningStandard(title, enabled, icon, onClick)
         }
 
+        /** Adds Turn Off Kerning. */
         fun KerningNone(
             title: String = getString(Res.string.kerning_none),
             enabled: Boolean = true,
@@ -686,6 +762,7 @@ class MenuBarScope(
             elements += FormatStd.KerningNone(title, enabled, icon, onClick)
         }
 
+        /** Adds Tighten Kerning. */
         fun KerningTighten(
             title: String = getString(Res.string.kerning_tighten),
             enabled: Boolean = true,
@@ -695,6 +772,7 @@ class MenuBarScope(
             elements += FormatStd.KerningTighten(title, enabled, icon, onClick)
         }
 
+        /** Adds Loosen Kerning. */
         fun KerningLoosen(
             title: String = getString(Res.string.kerning_loosen),
             enabled: Boolean = true,
@@ -704,6 +782,7 @@ class MenuBarScope(
             elements += FormatStd.KerningLoosen(title, enabled, icon, onClick)
         }
 
+        /** Adds a conventionally titled Ligatures submenu. */
         fun LigaturesMenu(
             title: String = getString(Res.string.ligatures),
             enabled: Boolean = true,
@@ -711,6 +790,7 @@ class MenuBarScope(
             block: MenuScope.() -> Unit,
         ) = Menu(title, enabled, icon, null, null, block)
 
+        /** Adds Turn Off Ligatures. */
         fun LigaturesNone(
             title: String = getString(Res.string.ligatures_none),
             enabled: Boolean = true,
@@ -720,6 +800,7 @@ class MenuBarScope(
             elements += FormatStd.LigaturesNone(title, enabled, icon, onClick)
         }
 
+        /** Adds Use Standard Ligatures. */
         fun LigaturesStandard(
             title: String = getString(Res.string.ligatures_standard),
             enabled: Boolean = true,
@@ -729,6 +810,7 @@ class MenuBarScope(
             elements += FormatStd.LigaturesStandard(title, enabled, icon, onClick)
         }
 
+        /** Adds Use All Ligatures. */
         fun LigaturesAll(
             title: String = getString(Res.string.ligatures_all),
             enabled: Boolean = true,
@@ -738,6 +820,7 @@ class MenuBarScope(
             elements += FormatStd.LigaturesAll(title, enabled, icon, onClick)
         }
 
+        /** Adds a conventionally titled Baseline submenu. */
         fun BaselineMenu(
             title: String = getString(Res.string.baseline),
             enabled: Boolean = true,
@@ -745,6 +828,7 @@ class MenuBarScope(
             block: MenuScope.() -> Unit,
         ) = Menu(title, enabled, icon, null, null, block)
 
+        /** Adds the standard baseline action. */
         fun BaselineStandard(
             title: String = getString(Res.string.baseline_standard),
             enabled: Boolean = true,
@@ -754,6 +838,7 @@ class MenuBarScope(
             elements += FormatStd.BaselineStandard(title, enabled, icon, onClick)
         }
 
+        /** Adds Raise Baseline. */
         fun RaiseBaseline(
             title: String = getString(Res.string.raise_baseline),
             enabled: Boolean = true,
@@ -763,6 +848,7 @@ class MenuBarScope(
             elements += FormatStd.RaiseBaseline(title, enabled, icon, onClick)
         }
 
+        /** Adds Lower Baseline. */
         fun LowerBaseline(
             title: String = getString(Res.string.lower_baseline),
             enabled: Boolean = true,
@@ -772,6 +858,7 @@ class MenuBarScope(
             elements += FormatStd.LowerBaseline(title, enabled, icon, onClick)
         }
 
+        /** Adds Superscript. */
         fun Superscript(
             title: String = getString(Res.string.superscript),
             enabled: Boolean = true,
@@ -781,6 +868,7 @@ class MenuBarScope(
             elements += FormatStd.Superscript(title, enabled, icon, onClick)
         }
 
+        /** Adds Subscript. */
         fun Subscript(
             title: String = getString(Res.string.subscript),
             enabled: Boolean = true,
@@ -790,6 +878,7 @@ class MenuBarScope(
             elements += FormatStd.Subscript(title, enabled, icon, onClick)
         }
 
+        /** Adds a conventionally titled Text/alignment submenu. */
         fun TextMenu(
             title: String = getString(Res.string.text),
             enabled: Boolean = true,
@@ -797,6 +886,7 @@ class MenuBarScope(
             block: MenuScope.() -> Unit,
         ) = Menu(title, enabled, icon, null, null, block)
 
+        /** Adds a controlled Align Left item. */
         fun AlignLeft(
             title: String = getString(Res.string.align_left),
             checked: Boolean = false,
@@ -807,6 +897,7 @@ class MenuBarScope(
             elements += FormatStd.AlignLeft(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds a controlled Align Center item. */
         fun AlignCenter(
             title: String = getString(Res.string.align_center),
             checked: Boolean = false,
@@ -817,6 +908,7 @@ class MenuBarScope(
             elements += FormatStd.AlignCenter(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds a controlled Align Right item. */
         fun AlignRight(
             title: String = getString(Res.string.align_right),
             checked: Boolean = false,
@@ -827,6 +919,7 @@ class MenuBarScope(
             elements += FormatStd.AlignRight(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds a controlled Justified alignment item. */
         fun AlignJustified(
             title: String = getString(Res.string.align_justified),
             checked: Boolean = false,
@@ -837,10 +930,11 @@ class MenuBarScope(
             elements += FormatStd.AlignJustified(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds Show/Hide Toolbar; [state] controls both the localized title and default checkmark. */
         fun ShowToolbar(
             state: Boolean,
             title: String = getString(if (state) Res.string.hide_toolbar else Res.string.show_toolbar),
-            checked: Boolean = false,
+            checked: Boolean = state,
             enabled: Boolean = true,
             icon: MenuIcon? = null,
             onToggle: (Boolean) -> Unit,
@@ -848,6 +942,7 @@ class MenuBarScope(
             elements += ViewStd.ShowToolbar(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds Customize Toolbar. */
         fun CustomizeToolbar(
             title: String = getString(Res.string.customize_toolbar),
             enabled: Boolean = true,
@@ -857,6 +952,7 @@ class MenuBarScope(
             elements += ViewStd.CustomizeToolbar(title, enabled, icon, onClick)
         }
 
+        /** Adds Enter/Exit Full Screen with a title derived from [state]. */
         fun ToggleFullScreen(
             state: Boolean,
             title: String = getString(if (state) Res.string.exit_full_screen else Res.string.enter_full_screen),
@@ -867,10 +963,11 @@ class MenuBarScope(
             elements += ViewStd.ToggleFullScreen(title, enabled, icon, onClick)
         }
 
+        /** Adds Show/Hide Sidebar; [state] controls both the localized title and default checkmark. */
         fun ToggleSidebar(
             state: Boolean,
             title: String = getString(if (state) Res.string.hide_sidebar else Res.string.show_sidebar),
-            checked: Boolean = false,
+            checked: Boolean = state,
             enabled: Boolean = true,
             icon: MenuIcon? = null,
             onToggle: (Boolean) -> Unit,
@@ -878,10 +975,11 @@ class MenuBarScope(
             elements += ViewStd.ToggleSidebar(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds Show/Hide Tab Bar; [state] controls both the localized title and default checkmark. */
         fun ToggleTabBar(
             state: Boolean,
             title: String = getString(if (state) Res.string.hide_tab_bar else Res.string.show_tab_bar),
-            checked: Boolean = false,
+            checked: Boolean = state,
             enabled: Boolean = true,
             icon: MenuIcon? = null,
             onToggle: (Boolean) -> Unit,
@@ -889,6 +987,7 @@ class MenuBarScope(
             elements += ViewStd.ToggleTabBar(title, enabled, icon, checked, onToggle)
         }
 
+        /** Adds the standard Close Window action. */
         fun Close(
             title: String = getString(Res.string.window_close),
             enabled: Boolean = true,
@@ -898,6 +997,7 @@ class MenuBarScope(
             elements += WindowStd.Close(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Minimize Window action. */
         fun Minimize(
             title: String = getString(Res.string.window_minimize),
             enabled: Boolean = true,
@@ -907,6 +1007,7 @@ class MenuBarScope(
             elements += WindowStd.Minimize(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Minimize All action. */
         fun MinimizeAll(
             title: String = getString(Res.string.window_minimize_all),
             enabled: Boolean = true,
@@ -916,6 +1017,7 @@ class MenuBarScope(
             elements += WindowStd.MinimizeAll(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard Zoom Window action. */
         fun Zoom(
             title: String = getString(Res.string.window_zoom),
             enabled: Boolean = true,
@@ -925,6 +1027,7 @@ class MenuBarScope(
             elements += WindowStd.Zoom(title, enabled, icon, onClick)
         }
 
+        /** Adds Bring All to Front. */
         fun BringAllToFront(
             title: String = getString(Res.string.bring_all_to_front),
             enabled: Boolean = true,
@@ -934,6 +1037,7 @@ class MenuBarScope(
             elements += WindowStd.BringAllToFront(title, enabled, icon, onClick)
         }
 
+        /** Adds Show Next Tab. */
         fun ShowNextTab(
             title: String = getString(Res.string.show_next_tab),
             enabled: Boolean = true,
@@ -943,6 +1047,7 @@ class MenuBarScope(
             elements += WindowStd.ShowNextTab(title, enabled, icon, onClick)
         }
 
+        /** Adds Show Previous Tab. */
         fun ShowPreviousTab(
             title: String = getString(Res.string.show_previous_tab),
             enabled: Boolean = true,
@@ -952,6 +1057,7 @@ class MenuBarScope(
             elements += WindowStd.ShowPreviousTab(title, enabled, icon, onClick)
         }
 
+        /** Adds Merge All Windows. */
         fun MergeAllWindows(
             title: String = getString(Res.string.merge_all_windows),
             enabled: Boolean = true,
@@ -961,6 +1067,7 @@ class MenuBarScope(
             elements += WindowStd.MergeAllWindows(title, enabled, icon, onClick)
         }
 
+        /** Adds Move Tab to New Window. */
         fun MoveTabToNewWindow(
             title: String = getString(Res.string.move_tab_to_new_window),
             enabled: Boolean = true,
@@ -970,6 +1077,7 @@ class MenuBarScope(
             elements += WindowStd.MoveTabToNewWindow(title, enabled, icon, onClick)
         }
 
+        /** Adds the standard application Help action. */
         fun AppHelp(
             title: String = getString(Res.string.app_help),
             enabled: Boolean = true,
@@ -979,6 +1087,12 @@ class MenuBarScope(
             elements += HelpItem.AppHelp(title, enabled, icon, onClick)
         }
 
+        /**
+         * Adds an application-defined action item.
+         *
+         * Subtitles and badges are AppKit-only. Swing renders the title, shortcut, supported icon,
+         * enabled state, and tooltip, and deliberately omits unsupported presentation.
+         */
         fun Item(
             title: String,
             shortcut: MenuShortcut? = null,
@@ -992,6 +1106,12 @@ class MenuBarScope(
             elements += CustomItem(title, shortcut, enabled, icon, subtitle, tooltip, badge, onClick)
         }
 
+        /**
+         * Adds an application-controlled checked item.
+         *
+         * [onToggle] receives the requested new value; update [checked] state to reflect it on the
+         * next composition.
+         */
         fun Checkbox(
             title: String,
             checked: Boolean = false,
@@ -1006,10 +1126,17 @@ class MenuBarScope(
             elements += CheckboxItem(title, checked, shortcut, enabled, icon, subtitle, tooltip, badge, onToggle)
         }
 
+        /** Adds a separator. AppKit handles native separator presentation and normalization. */
         fun Separator() {
             elements += MenuModel.Separator
         }
 
+        /**
+         * Adds a nested submenu.
+         *
+         * [subtitle] and [badge] are available in the native macOS renderer and intentionally
+         * omitted by Swing, whose standard menu API has no equivalent presentation.
+         */
         fun Menu(
             title: String,
             enabled: Boolean = true,
@@ -1027,6 +1154,7 @@ class MenuBarScope(
             elements += MenuModel.SectionHeader(title)
         }
 
+        /** Adds a native section header and surrounds the section with separators. */
         fun MenuScope.Section(
             title: String,
             content: MenuScope.() -> Unit,
@@ -1038,6 +1166,7 @@ class MenuBarScope(
         }
     }
 
+    /** Declares the process application menu. Swing omits this macOS-specific top-level menu. */
     fun MacApplicationMenu(content: MenuScope.() -> Unit) {
         if (hasApp) {
             println("[AdvancedMenuBar] MacApplicationMenu already set – further call will be ignored.")
@@ -1049,6 +1178,7 @@ class MenuBarScope(
         hasApp = true
     }
 
+    /** Declares the single File menu. */
     fun FileMenu(
         title: String = getString(Res.string.file),
         content: MenuScope.() -> Unit,
@@ -1063,6 +1193,12 @@ class MenuBarScope(
         hasFile = true
     }
 
+    /**
+     * Declares the single Edit menu.
+     *
+     * Set [suppressAutomaticItems] to remove Writing Tools, AutoFill, Dictation, and Emoji &
+     * Symbols entries that current macOS versions may append automatically.
+     */
     fun EditMenu(
         title: String = getString(Res.string.edit),
         suppressAutomaticItems: Boolean = false,
@@ -1078,6 +1214,7 @@ class MenuBarScope(
         hasEdit = true
     }
 
+    /** Declares the single Format menu. */
     fun FormatMenu(
         title: String = getString(Res.string.format),
         content: MenuScope.() -> Unit,
@@ -1092,6 +1229,7 @@ class MenuBarScope(
         hasFormat = true
     }
 
+    /** Declares the single View menu. */
     fun ViewMenu(
         title: String = getString(Res.string.view),
         content: MenuScope.() -> Unit,
@@ -1106,6 +1244,11 @@ class MenuBarScope(
         hasView = true
     }
 
+    /**
+     * Declares the single Window menu.
+     *
+     * Set [suppressAutoWindowList] when AppKit should not append its managed window list.
+     */
     fun WindowMenu(
         title: String = getString(Res.string.window),
         suppressAutoWindowList: Boolean = false,
@@ -1121,6 +1264,7 @@ class MenuBarScope(
         hasWindow = true
     }
 
+    /** Declares the single Help menu. */
     fun HelpMenu(
         title: String = getString(Res.string.help),
         content: MenuScope.() -> Unit,
@@ -1135,6 +1279,7 @@ class MenuBarScope(
         hasHelp = true
     }
 
+    /** Declares an application-defined top-level menu. May be called more than once. */
     fun CustomMenu(
         title: String,
         content: MenuScope.() -> Unit,

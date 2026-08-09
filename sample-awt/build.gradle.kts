@@ -20,13 +20,14 @@ java {
 }
 
 dependencies {
+    implementation(projects.advancedMenubarAwt)
     implementation(libs.compose.runtime)
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
     implementation(libs.compose.foundation)
     implementation(libs.compose.components.resources)
+    implementation(libs.material.symbols)
     implementation(compose.desktop.currentOs)
-    implementation(projects.advancedMenubarAwt)
 }
 
 compose.resources {

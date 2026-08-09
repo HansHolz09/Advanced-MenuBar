@@ -25,6 +25,7 @@ dependencies {
     implementation(projects.advancedMenubarTao)
     implementation(libs.compose.material3)
     implementation(libs.compose.components.resources)
+    implementation(libs.material.symbols)
     implementation(libs.nucleus.graalvm.runtime)
     implementation(compose.desktop.currentOs)
 }
@@ -40,7 +41,12 @@ nucleus.application {
         targetFormats(TargetFormat.Dmg)
         packageName = "Advanced-Menubar Tao Sample"
         packageVersion = "1.0.0"
-        jvmArgs += listOf("-XstartOnFirstThread", "--enable-native-access=ALL-UNNAMED")
+
+        jvmArgs += "--enable-native-access=ALL-UNNAMED"
+        if (System.getProperty("os.name").startsWith("Mac")) {
+            jvmArgs += "-XstartOnFirstThread"
+        }
+
         macOS {
             bundleID = "dev.hansholz.advancedmenubar.sample.tao"
             dockName = "Advanced-Menubar Tao Sample"

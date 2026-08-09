@@ -71,10 +71,13 @@ internal object NativeTextContextMenuBridge {
         paste: () -> Unit,
     ) {
         if (!NativeMenuBridge.isAvailable) return
-        val previous = nativeClipboardString()
-        nativeSetClipboardString(replacement)
-        paste()
-        nativeRestoreClipboardStringLater(previous)
+        val snapshot = nativeSnapshotClipboard()
+        val expectedChangeCount = nativeSetClipboardString(replacement)
+        try {
+            paste()
+        } finally {
+            nativeRestoreClipboardLater(snapshot, expectedChangeCount)
+        }
     }
 
     @JvmStatic
@@ -116,9 +119,13 @@ internal object NativeTextContextMenuBridge {
         textCallbackId: Long,
     )
 
-    @JvmStatic private external fun nativeClipboardString(): String?
+    @JvmStatic private external fun nativeSnapshotClipboard(): Long
 
-    @JvmStatic private external fun nativeSetClipboardString(value: String)
+    @JvmStatic private external fun nativeSetClipboardString(value: String): Long
 
-    @JvmStatic private external fun nativeRestoreClipboardStringLater(value: String?)
+    @JvmStatic
+    private external fun nativeRestoreClipboardLater(
+        snapshot: Long,
+        expectedChangeCount: Long,
+    )
 }

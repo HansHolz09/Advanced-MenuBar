@@ -2,11 +2,22 @@ package dev.hansholz.advancedmenubar
 
 import androidx.compose.ui.input.key.Key
 
+/**
+ * Keyboard accelerator for a custom menu item.
+ *
+ * Modifier names are platform-neutral: [meta] is Command on macOS and the Meta key in Swing,
+ * while [ctrl] is Control. Standard DSL entries choose their own platform-conventional shortcuts.
+ */
 data class MenuShortcut(
+    /** Compose key shown by the menu and used as its accelerator. */
     val key: Key,
+    /** Enables the Meta modifier (Command on macOS). */
     val meta: Boolean = false,
+    /** Enables the Control modifier. */
     val ctrl: Boolean = false,
+    /** Enables the Alt/Option modifier. */
     val alt: Boolean = false,
+    /** Enables the Shift modifier. */
     val shift: Boolean = false,
 )
 

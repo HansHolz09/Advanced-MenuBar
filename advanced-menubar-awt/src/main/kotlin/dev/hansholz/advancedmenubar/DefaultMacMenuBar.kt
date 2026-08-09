@@ -13,6 +13,22 @@ import org.jetbrains.skiko.hostOs
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 
+/**
+ * Installs a conventional native macOS application menu with common Edit, View, Window, and Help
+ * entries for this Compose Desktop window.
+ *
+ * Standard entries without callbacks use AppKit or the Compose edit-command bridge. Optional menus
+ * can be removed with their corresponding flags.
+ *
+ * @param appName name used in application-specific localized labels.
+ * @param onAboutClick custom About action, or `null` for AppKit's standard About panel.
+ * @param onSettingsClick optional Settings action; the item is omitted when `null`.
+ * @param onHelpClick optional application Help action.
+ * @param editMenu whether to include the standard Edit menu.
+ * @param viewMenu whether to include the fullscreen View menu.
+ * @param windowMenu whether to include the standard Window menu.
+ * @param helpMenu whether to include the Help menu.
+ */
 @Composable
 fun FrameWindowScope.DefaultMacMenuBar(
     appName: String = window.title,

@@ -10,6 +10,19 @@ import androidx.compose.runtime.remember
 import dev.hansholz.advancedmenubar.NativeTextContextMenuBridge.dispatchAsyncOnMain
 import org.jetbrains.skiko.hostOs
 
+/**
+ * Replaces Compose text-field popups below [content] with the native macOS text context menu.
+ *
+ * On Windows, Linux, or when the packaged JNI bridge cannot be loaded, this provider leaves the
+ * normal Compose context menu untouched. On macOS, [isDark] updates the appearance of the entire
+ * `NSApplication`, ensuring that application, context, and other native menus use the same theme.
+ * Pass `null` to leave the current application appearance unchanged.
+ *
+ * @param isDark dark/light application appearance, or `null` to make no appearance change.
+ * @param showExtraOptions whether AppKit text services beyond Cut, Copy, and Paste remain visible.
+ * @param customActions application actions inserted after the standard selection actions.
+ * @param content content whose Compose text fields should use the provider.
+ */
 @Composable
 fun NativeTextContextMenuProvider(
     isDark: Boolean? = isSystemInDarkTheme(),
@@ -17,7 +30,7 @@ fun NativeTextContextMenuProvider(
     customActions: List<ContextMenuAction> = emptyList(),
     content: @Composable () -> Unit,
 ) {
-    if (hostOs.isMacOS) {
+    if (hostOs.isMacOS && NativeMenuBridge.isAvailable) {
         isDark?.let {
             LaunchedEffect(it) {
                 dispatchAsyncOnMain {

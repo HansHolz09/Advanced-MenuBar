@@ -452,6 +452,22 @@ static NSImage *ambImage(int32_t kind, NSString *value, BOOL isTemplate) {
         NSData *data = [[NSData alloc] initWithBase64EncodedString:value options:0];
         if (data != nil) image = [[NSImage alloc] initWithData:data];
     }
+    if (image != nil && (kind == 2 || kind == 3) &&
+        [NSImage respondsToSelector:@selector(imageWithSystemSymbolName:accessibilityDescription:)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability-new"
+        NSImage *reference = [NSImage imageWithSystemSymbolName:@"circle"
+                                       accessibilityDescription:nil];
+#pragma clang diagnostic pop
+        if (reference.size.width > 0.0 && reference.size.height > 0.0) {
+            NSSize sourceSize = image.size;
+            if (sourceSize.width > 0.0 && sourceSize.height > 0.0) {
+                CGFloat scale = MIN(reference.size.width / sourceSize.width,
+                                    reference.size.height / sourceSize.height);
+                image.size = NSMakeSize(sourceSize.width * scale, sourceSize.height * scale);
+            }
+        }
+    }
     image.template = isTemplate;
     return image;
 }
@@ -1084,36 +1100,64 @@ Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeShowTextCont
     if (NSThread.isMainThread) schedule(); else dispatch_async(dispatch_get_main_queue(), schedule);
 }
 
-JNIEXPORT jstring JNICALL
-Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeClipboardString(
+JNIEXPORT jlong JNICALL
+Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeSnapshotClipboard(
     JNIEnv *env, jclass clazz) {
-    (void)clazz;
-    __block NSString *value = nil;
-    void (^work)(void) = ^{ value = [NSPasteboard.generalPasteboard stringForType:NSPasteboardTypeString]; };
+    (void)env; (void)clazz;
+    __block int64_t result = 0;
+    void (^work)(void) = ^{
+        NSMutableArray<NSDictionary<NSPasteboardType, NSData *> *> *snapshot = [NSMutableArray array];
+        for (NSPasteboardItem *item in NSPasteboard.generalPasteboard.pasteboardItems) {
+            NSMutableDictionary<NSPasteboardType, NSData *> *values = [NSMutableDictionary dictionary];
+            for (NSPasteboardType type in item.types) {
+                NSData *data = [item dataForType:type];
+                if (data != nil) values[type] = data;
+            }
+            [snapshot addObject:values.copy];
+        }
+        result = (int64_t)(intptr_t)CFBridgingRetain(snapshot.copy);
+    };
     if (NSThread.isMainThread) work(); else dispatch_sync(dispatch_get_main_queue(), work);
-    return value == nil ? NULL : (*env)->NewStringUTF(env, value.UTF8String ?: "");
+    return (jlong)result;
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT jlong JNICALL
 Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeSetClipboardString(
     JNIEnv *env, jclass clazz, jstring value) {
     (void)clazz;
     NSString *text = ambNSString(env, value) ?: @"";
+    __block NSInteger changeCount = 0;
     void (^work)(void) = ^{
         [NSPasteboard.generalPasteboard clearContents];
         [NSPasteboard.generalPasteboard setString:text forType:NSPasteboardTypeString];
+        changeCount = NSPasteboard.generalPasteboard.changeCount;
     };
     if (NSThread.isMainThread) work(); else dispatch_sync(dispatch_get_main_queue(), work);
+    return (jlong)changeCount;
 }
 
 JNIEXPORT void JNICALL
-Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeRestoreClipboardStringLater(
-    JNIEnv *env, jclass clazz, jstring value) {
-    (void)clazz;
-    NSString *text = ambNSString(env, value);
+Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeRestoreClipboardLater(
+    JNIEnv *env, jclass clazz, jlong snapshotHandle, jlong expectedChangeCount) {
+    (void)env; (void)clazz;
+    if (snapshotHandle == 0) return;
+    NSArray<NSDictionary<NSPasteboardType, NSData *> *> *snapshot =
+        (__bridge NSArray<NSDictionary<NSPasteboardType, NSData *> *> *)(void *)(intptr_t)snapshotHandle;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(100 * NSEC_PER_MSEC)), dispatch_get_main_queue(), ^{
-        [NSPasteboard.generalPasteboard clearContents];
-        if (text != nil) [NSPasteboard.generalPasteboard setString:text forType:NSPasteboardTypeString];
+        NSPasteboard *pasteboard = NSPasteboard.generalPasteboard;
+        if (pasteboard.changeCount == (NSInteger)expectedChangeCount) {
+            [pasteboard clearContents];
+            NSMutableArray<NSPasteboardItem *> *items = [NSMutableArray arrayWithCapacity:snapshot.count];
+            for (NSDictionary<NSPasteboardType, NSData *> *values in snapshot) {
+                NSPasteboardItem *item = [[NSPasteboardItem alloc] init];
+                for (NSPasteboardType type in values) {
+                    [item setData:values[type] forType:type];
+                }
+                [items addObject:item];
+            }
+            if (items.count > 0) [pasteboard writeObjects:items];
+        }
+        CFRelease((CFTypeRef)(void *)(intptr_t)snapshotHandle);
     });
 }
 

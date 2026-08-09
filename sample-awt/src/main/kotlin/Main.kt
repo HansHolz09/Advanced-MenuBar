@@ -17,7 +17,7 @@ fun main() =
         val language = remember { mutableStateOf<MenuBarLanguage?>(null) }
         val isDark = remember { mutableStateOf(false) }
 
-        val windows = remember { mutableStateListOf("Advanced Menubar" to true) }
+        val windows = remember { mutableStateListOf("Advanced MenuBar" to true) }
         windows.forEachIndexed { index, (title, visible) ->
             if (visible) {
                 Window(
@@ -60,7 +60,7 @@ fun main() =
                                     onSettingsClick = { clickedItems += "Settings" },
                                     onHelpClick = { clickedItems += "Help" },
                                 )
-                            2 -> FullMacMenuBar("Advanced Menubar")
+                            2 -> FullMacMenuBar("Advanced MenuBar")
                         }
                     }
 
@@ -86,7 +86,7 @@ fun main() =
                             checkboxes = checkboxes,
                             textFieldState = textFieldState,
                         ) {
-                            windows += "Advanced Menubar ${windows.size + 1}" to true
+                            windows += "Advanced MenuBar ${windows.size + 1}" to true
                         }
                     }
                 }

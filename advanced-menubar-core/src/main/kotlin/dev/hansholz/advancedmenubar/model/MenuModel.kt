@@ -1,5 +1,7 @@
 package dev.hansholz.advancedmenubar
 
+/** Backend SPI. Applications should build menus through [MenuBarScope] instead. */
+@InternalAdvancedMenuBarApi
 object MenuModel {
     sealed interface MenuElement
 

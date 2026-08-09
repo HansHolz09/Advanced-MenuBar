@@ -1,3 +1,5 @@
+@file:OptIn(InternalAdvancedMenuBarApi::class)
+
 package dev.hansholz.advancedmenubar
 
 import androidx.compose.runtime.Composable
@@ -24,6 +26,18 @@ import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 import java.util.Base64
 
+/**
+ * Installs a declaratively built AppKit main menu for the current application.
+ *
+ * Most applications should use the AWT or Tao `AdvancedMacMenuBar` window-scope extension so menu
+ * ownership follows window focus automatically. This lower-level entry point is useful for custom
+ * window integrations that can supply [active] themselves. It is a no-op if the native bridge is
+ * unavailable and never substitutes a Swing menu.
+ *
+ * @param appName name used by the application menu and localized labels.
+ * @param active whether this owner currently supplies the process-wide macOS main menu.
+ * @param content declarative menu structure.
+ */
 @Composable
 fun NativeMacMenuBar(
     appName: String,
@@ -185,7 +199,17 @@ internal object NativeMenuEncoder {
         when (element) {
             Separator -> nodes += NativeNode(NodeKind.SEPARATOR, parent)
             is SectionHeader -> nodes += NativeNode(NodeKind.SECTION_HEADER, parent, element.title)
-            is Submenu -> appendSubmenu(nodes, parent, element.title, element.enabled, element.icon, element.children)
+            is Submenu ->
+                appendSubmenu(
+                    nodes = nodes,
+                    parent = parent,
+                    title = element.title,
+                    enabled = element.enabled,
+                    icon = element.icon,
+                    children = element.children,
+                    subtitle = element.subtitle,
+                    badge = element.badge,
+                )
             is FileStd.OpenRecent -> appendSubmenu(nodes, parent, element.title, element.enabled, element.icon, element.children)
             is SystemItem.Services -> nodes += NativeNode(NodeKind.SERVICES, parent, element.title)
             is CustomItem ->
@@ -228,9 +252,11 @@ internal object NativeMenuEncoder {
         enabled: Boolean,
         icon: MenuIcon?,
         children: List<MenuElement>,
+        subtitle: String? = null,
+        badge: String? = null,
     ) {
         val index = nodes.size
-        nodes += NativeNode.submenu(parent, title, enabled, icon)
+        nodes += NativeNode.submenu(parent, title, enabled, icon, subtitle, badge)
         children.forEach { appendElement(nodes, index, it) }
     }
 
@@ -320,6 +346,8 @@ private data class NativeNode(
             title: String,
             enabled: Boolean,
             icon: MenuIcon?,
+            subtitle: String?,
+            badge: String?,
         ): NativeNode {
             val nativeIcon = icon.nativeIcon()
             return NativeNode(
@@ -330,6 +358,8 @@ private data class NativeNode(
                 iconKind = nativeIcon.kind,
                 iconValue = nativeIcon.value,
                 iconTemplate = nativeIcon.template,
+                subtitle = subtitle,
+                badge = badge,
             )
         }
 

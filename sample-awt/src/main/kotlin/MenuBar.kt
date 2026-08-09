@@ -19,6 +19,8 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.asAwtTransferable
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.WindowPlacement
+import com.composables.icons.materialsymbols.MaterialSymbols
+import com.composables.icons.materialsymbols.rounded.Info
 import composeadvancedmenubar.sample.awt.generated.resources.Res
 import composeadvancedmenubar.sample.awt.generated.resources.allStringResources
 import composeadvancedmenubar.sample.awt.generated.resources.available_version
@@ -38,6 +40,7 @@ import composeadvancedmenubar.sample.awt.generated.resources.section
 import composeadvancedmenubar.sample.awt.generated.resources.website
 import dev.hansholz.advancedmenubar.CompatibilityMenuBar
 import dev.hansholz.advancedmenubar.MenuIcon.SFSymbol
+import dev.hansholz.advancedmenubar.rememberMenuIconFrom
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -82,9 +85,11 @@ fun FrameWindowScope.MenuBar(
     val selectionCollapsed by remember { derivedStateOf { textFieldState.selection.collapsed } }
     val textIsNotEmpty by remember { derivedStateOf { textFieldState.text.isNotEmpty() } }
 
+    val info = rememberMenuIconFrom(MaterialSymbols.Rounded.Info)
+
     CompatibilityMenuBar {
         MacApplicationMenu {
-            About(icon = SFSymbol("info.circle")) { onClick("About") }
+            About(icon = info) { onClick("About") }
             Separator()
             Item(
                 title = getString(Res.string.check_for_updates),

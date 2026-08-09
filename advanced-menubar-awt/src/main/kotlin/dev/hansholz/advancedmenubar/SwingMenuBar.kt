@@ -1,3 +1,5 @@
+@file:OptIn(InternalAdvancedMenuBarApi::class)
+
 package dev.hansholz.advancedmenubar
 
 import androidx.compose.runtime.Composable
@@ -20,6 +22,7 @@ import dev.hansholz.advancedmenubar.MenuModel.TopMenu
 import dev.hansholz.advancedmenubar.MenuModel.ViewStd
 import dev.hansholz.advancedmenubar.MenuModel.WindowStd
 import java.awt.Font
+import java.awt.Toolkit
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
 import java.io.ByteArrayInputStream
@@ -35,8 +38,15 @@ import javax.swing.JMenuBar
 import javax.swing.JMenuItem
 import javax.swing.KeyStroke
 import javax.swing.SwingUtilities
-import kotlin.collections.forEach
 
+/**
+ * Renders the Advanced MenuBar DSL as a Swing [JMenuBar].
+ *
+ * Intended primarily for Windows and Linux. Standard actions receive platform-conventional
+ * accelerators, such as Ctrl+Z/Ctrl+Y and F11, but require callbacks because Swing has no AppKit
+ * responder chain. Unsupported AppKit-only presentation such as SF Symbols, subtitles, and badges
+ * is omitted.
+ */
 @Composable
 fun FrameWindowScope.SwingMenuBar(
     appName: String = window.title,
@@ -254,6 +264,12 @@ private fun JMenu.addSwingElements(elements: List<MenuElement>) {
 
             is HelpItem.AppHelp -> add(swingActionItem(el.title, el.enabled, icon = el.icon, onClick = el.onClick))
         }
+        val accelerator = el.standardSwingShortcut()
+        if (accelerator != null) {
+            (getMenuComponent(menuComponentCount - 1) as? JMenuItem)?.let { item ->
+                if (item.accelerator == null) item.accelerator = accelerator
+            }
+        }
     }
 }
 
@@ -266,7 +282,7 @@ private fun swingActionItem(
     onClick: (() -> Unit)?,
 ): JMenuItem =
     JMenuItem(title).apply {
-        isEnabled = enabled
+        isEnabled = enabled && onClick != null
         shortcut?.toKeyStroke()?.let { accelerator = it }
         icon?.toSwingIcon()?.let { this.icon = it }
         toolTipText = tooltip
@@ -299,7 +315,7 @@ private fun swingStdCheckboxItem(
 ): JCheckBoxMenuItem {
     val initial = checked ?: false
     return JCheckBoxMenuItem(title, initial).apply {
-        isEnabled = enabled
+        isEnabled = enabled && onToggle != null
         icon?.toSwingIcon()?.let { this.icon = it }
         addItemListener {
             val newValue = isSelected
@@ -311,6 +327,59 @@ private fun swingStdCheckboxItem(
         }
     }
 }
+
+private val menuShortcutMask: Int by lazy {
+    Toolkit.getDefaultToolkit().menuShortcutKeyMaskEx
+}
+
+private fun menuShortcut(
+    keyCode: Int,
+    shift: Boolean = false,
+): KeyStroke =
+    KeyStroke.getKeyStroke(
+        keyCode,
+        menuShortcutMask or if (shift) InputEvent.SHIFT_DOWN_MASK else 0,
+    )
+
+private fun MenuElement.standardSwingShortcut(): KeyStroke? =
+    when (this) {
+        is FileStd.New -> menuShortcut(KeyEvent.VK_N)
+        is FileStd.Open -> menuShortcut(KeyEvent.VK_O)
+        is FileStd.Close -> menuShortcut(KeyEvent.VK_W)
+        is FileStd.CloseAll -> menuShortcut(KeyEvent.VK_W, shift = true)
+        is FileStd.Save -> menuShortcut(KeyEvent.VK_S)
+        is FileStd.SaveAs -> menuShortcut(KeyEvent.VK_S, shift = true)
+        is FileStd.PageSetup -> menuShortcut(KeyEvent.VK_P, shift = true)
+        is FileStd.Print -> menuShortcut(KeyEvent.VK_P)
+
+        is EditStd.Undo -> menuShortcut(KeyEvent.VK_Z)
+        is EditStd.Redo -> menuShortcut(KeyEvent.VK_Y)
+        is EditStd.Cut -> menuShortcut(KeyEvent.VK_X)
+        is EditStd.Copy -> menuShortcut(KeyEvent.VK_C)
+        is EditStd.Paste -> menuShortcut(KeyEvent.VK_V)
+        is EditStd.PasteAndMatchStyle -> menuShortcut(KeyEvent.VK_V, shift = true)
+        is EditStd.Delete -> KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0)
+        is EditStd.SelectAll -> menuShortcut(KeyEvent.VK_A)
+        is EditStd.Find -> menuShortcut(KeyEvent.VK_F)
+        is EditStd.FindAndReplace -> menuShortcut(KeyEvent.VK_H)
+        is EditStd.FindNext -> KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0)
+        is EditStd.FindPrevious -> KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.SHIFT_DOWN_MASK)
+
+        is FormatStd.Bold -> menuShortcut(KeyEvent.VK_B)
+        is FormatStd.Italic -> menuShortcut(KeyEvent.VK_I)
+        is FormatStd.Underline -> menuShortcut(KeyEvent.VK_U)
+        is FormatStd.Bigger -> menuShortcut(KeyEvent.VK_EQUALS, shift = true)
+        is FormatStd.Smaller -> menuShortcut(KeyEvent.VK_MINUS)
+
+        is ViewStd.ToggleFullScreen -> KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0)
+
+        is WindowStd.Close -> menuShortcut(KeyEvent.VK_W)
+        is WindowStd.ShowNextTab -> menuShortcut(KeyEvent.VK_TAB)
+        is WindowStd.ShowPreviousTab -> menuShortcut(KeyEvent.VK_TAB, shift = true)
+
+        is HelpItem.AppHelp -> KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)
+        else -> null
+    }
 
 private val swingIconCache = WeakHashMap<MenuIcon, Icon?>()
 

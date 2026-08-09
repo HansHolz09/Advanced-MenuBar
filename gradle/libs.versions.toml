@@ -3,6 +3,7 @@ compose-plugin = "1.11.1"
 kotlin = "2.4.10"
 ktlint = "14.2.0"
 material3 = "1.11.0-alpha07"
+materialSymbols = "2.2.1"
 mavenPublishVanniktech = "0.37.0"
 nucleus = "2.3.2"
 
@@ -12,6 +13,7 @@ compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-pl
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-plugin" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-plugin" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
+material-symbols = { module = "com.composables:icons-material-symbols-rounded-cmp", version.ref = "materialSymbols" }
 nucleus-core-runtime = { module = "dev.nucleusframework:nucleus.core-runtime", version.ref = "nucleus" }
 nucleus-decorated-window-tao = { module = "dev.nucleusframework:nucleus.decorated-window-tao", version.ref = "nucleus" }
 nucleus-graalvm-runtime = { module = "dev.nucleusframework:nucleus.graalvm-runtime", version.ref = "nucleus" }

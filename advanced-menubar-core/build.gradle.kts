@@ -34,7 +34,7 @@ compose.resources {
 
 val nativeResourceDir = layout.projectDirectory.dir("src/main/resources/advanced-menubar/native")
 
-val buildNativeMacOs by tasks.registering(Exec::class) {
+val buildNativeMacOs = tasks.register<Exec>("Build Native macOS") {
     description = "Compiles the Objective-C JNI bridge for macOS arm64 and x64"
     group = "build"
     enabled = Os.isFamily(Os.FAMILY_MAC)

@@ -6,6 +6,7 @@ import composeadvancedmenubar.generated.resources.allStringResources
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
+@InternalAdvancedMenuBarApi
 fun buildMenuModel(
     appName: String,
     content: MenuBarScope.() -> Unit,

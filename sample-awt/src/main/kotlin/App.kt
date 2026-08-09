@@ -143,7 +143,7 @@ fun App(
                             onValueChange = {},
                             modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                             readOnly = true,
-                            label = { Text("Menubar Language") },
+                            label = { Text("MenuBar Language") },
                             trailingIcon = {
                                 ExposedDropdownMenuDefaults.TrailingIcon(expanded)
                             },

@@ -3,7 +3,9 @@
 
 package dev.hansholz.advancedmenubar
 
+/** Languages for which Advanced MenuBar ships localized standard menu labels. */
 enum class MenuBarLanguage(
+    /** BCP 47 language tag used by the corresponding Compose resource directory. */
     val tag: String,
 ) {
     AR("ar"),

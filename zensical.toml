@@ -1,0 +1,59 @@
+[project]
+site_name = "Advanced MenuBar"
+site_description = "Declarative native macOS and cross-platform Swing menus for Compose Desktop"
+site_author = "Hans Holz"
+copyright = "Copyright &copy; 2026 Hans Holz"
+repo_url = "https://github.com/HansHolz09/Advanced-MenuBar"
+repo_name = "Advanced-MenuBar"
+nav = [
+  { "Overview" = "index.md" },
+  { "Quickstart" = "quickstart.md" },
+  { "Default menu" = "default-menu.md" },
+  { "Custom menus" = "custom-menus.md" },
+  { "DSL reference" = "api-reference.md" },
+  { "Edit and context menus" = "edit-and-context-menu.md" },
+  { "Icons, shortcuts, localization" = "icons-shortcuts-localization.md" },
+  { "AWT and Swing" = "awt.md" },
+  { "Tao on macOS" = "tao.md" },
+  { "GraalVM" = "graalvm.md" },
+  { "Samples" = "samples.md" },
+  { "Troubleshooting" = "troubleshooting.md" },
+  { "How it works" = "how-it-works.md" },
+]
+
+[project.theme]
+language = "en"
+icon.repo = "fontawesome/brands/github"
+features = [
+  "content.code.copy",
+  "navigation.footer",
+  "navigation.instant",
+  "navigation.path",
+  "navigation.sections",
+  "navigation.top",
+  "navigation.tracking",
+  "search.highlight",
+]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch to light mode"
+primary = "green"
+accent = "green"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+primary = "green"
+accent = "green"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to system preference"
+primary = "green"
+accent = "green"

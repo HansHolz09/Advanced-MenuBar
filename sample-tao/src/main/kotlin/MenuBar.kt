@@ -14,6 +14,8 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.asAwtTransferable
+import com.composables.icons.materialsymbols.MaterialSymbols
+import com.composables.icons.materialsymbols.rounded.Info
 import composeadvancedmenubar.sample.tao.generated.resources.Res
 import composeadvancedmenubar.sample.tao.generated.resources.allStringResources
 import composeadvancedmenubar.sample.tao.generated.resources.available_version
@@ -33,6 +35,7 @@ import composeadvancedmenubar.sample.tao.generated.resources.section
 import composeadvancedmenubar.sample.tao.generated.resources.website
 import dev.hansholz.advancedmenubar.AdvancedMacMenuBar
 import dev.hansholz.advancedmenubar.MenuIcon.SFSymbol
+import dev.hansholz.advancedmenubar.rememberMenuIconFrom
 import dev.nucleusframework.window.tao.TaoDecoratedWindowScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
@@ -60,9 +63,11 @@ fun TaoDecoratedWindowScope.MenuBar(
     val selectionCollapsed by remember { derivedStateOf { textFieldState.selection.collapsed } }
     val hasText by remember { derivedStateOf { textFieldState.text.isNotEmpty() } }
 
+    val info = rememberMenuIconFrom(MaterialSymbols.Rounded.Info)
+
     AdvancedMacMenuBar(appName) {
         MacApplicationMenu {
-            About(icon = SFSymbol("info.circle")) { onClick("About") }
+            About(icon = info) { onClick("About") }
             Separator()
             Item(
                 title = text(Res.string.check_for_updates),
