@@ -21,10 +21,18 @@ import dev.hansholz.advancedmenubar.MenuModel.SystemItem
 import dev.hansholz.advancedmenubar.MenuModel.TopMenu
 import dev.hansholz.advancedmenubar.MenuModel.ViewStd
 import dev.hansholz.advancedmenubar.MenuModel.WindowStd
+import java.awt.Color
+import java.awt.Component
+import java.awt.Dimension
 import java.awt.Font
 import java.awt.Toolkit
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.Insets
+import java.awt.RenderingHints
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
+import java.awt.geom.Path2D
 import java.io.ByteArrayInputStream
 import java.util.WeakHashMap
 import javax.imageio.ImageIO
@@ -32,12 +40,17 @@ import javax.swing.BorderFactory
 import javax.swing.Icon
 import javax.swing.ImageIcon
 import javax.swing.JCheckBoxMenuItem
+import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JMenu
 import javax.swing.JMenuBar
 import javax.swing.JMenuItem
+import javax.swing.JPopupMenu
 import javax.swing.KeyStroke
 import javax.swing.SwingUtilities
+import javax.swing.UIManager
+import javax.swing.plaf.basic.BasicSeparatorUI
+import kotlin.collections.forEach
 
 /**
  * Renders the Advanced MenuBar DSL as a Swing [JMenuBar].
@@ -59,6 +72,7 @@ fun FrameWindowScope.SwingMenuBar(
 @Composable
 internal fun FrameWindowScope.SwingMenuBarImplementation(model: List<TopMenu>) {
     DisposableEffect(Unit) {
+        UIManager.put("Menu.arrowIcon", SmoothArrowIcon())
         onDispose {
             SwingUtilities.invokeLater {
                 window.jMenuBar = null
@@ -143,6 +157,7 @@ private fun JMenu.addSwingElements(elements: List<MenuElement>) {
                 add(
                     JMenu(el.title).apply {
                         isEnabled = el.enabled
+                        margin = Insets(2, -30, 2, 5)
                         el.icon?.toSwingIcon()?.let { icon = it }
                         addSwingElements(el.children)
                     },
@@ -158,7 +173,7 @@ private fun JMenu.addSwingElements(elements: List<MenuElement>) {
                 add(label)
             }
 
-            is Separator -> addSeparator()
+            is Separator -> add(JPopupMenu.Separator().apply { ui = FullWidthSeparatorUI() })
 
             is SystemItem.About -> add(swingActionItem(el.title, el.enabled, icon = el.icon, onClick = el.onClick))
             is SystemItem.Settings -> add(swingActionItem(el.title, el.enabled, icon = el.icon, onClick = el.onClick))
@@ -174,7 +189,7 @@ private fun JMenu.addSwingElements(elements: List<MenuElement>) {
                 add(
                     JMenu(el.title).apply {
                         isEnabled = el.enabled
-                        el.icon?.toSwingIcon()?.let { icon = it }
+                        el.icon?.toSwingIcon()?.let { icon = it } ?: run { margin = Insets(2, -30, 2, 5) }
                         addSwingElements(el.children)
                     },
                 )
@@ -284,7 +299,7 @@ private fun swingActionItem(
     JMenuItem(title).apply {
         isEnabled = enabled && onClick != null
         shortcut?.toKeyStroke()?.let { accelerator = it }
-        icon?.toSwingIcon()?.let { this.icon = it }
+        icon?.toSwingIcon()?.let { this.icon = it } ?: run { margin = Insets(2, -30, 2, 5) }
         toolTipText = tooltip
         addActionListener { onClick?.invoke() }
     }
@@ -503,3 +518,49 @@ private fun Key.toAwtKeyCode(): Int? =
 
         else -> keyCode.takeIf { it != 0L }?.toInt()
     }
+
+class SmoothArrowIcon(
+    private val width: Int = 4,
+    private val height: Int = 6,
+    private val leftPad: Int = 20,
+    private val color: Color = Color(60, 60, 60)
+) : Icon {
+
+    override fun paintIcon(c: Component, g: Graphics, x: Int, y: Int) {
+        val g2 = g.create() as Graphics2D
+        try {
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+            g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
+            g2.color = color
+
+            val ax = x + leftPad
+            val ay = y + (iconHeight - height) / 2
+
+            val path = Path2D.Float().apply {
+                moveTo(ax.toDouble(), ay.toDouble())
+                lineTo((ax + width).toDouble(), (ay + height / 2).toDouble())
+                lineTo(ax.toDouble(), (ay + height).toDouble())
+            }
+            g2.draw(path)
+        } finally {
+            g2.dispose()
+        }
+    }
+
+    override fun getIconWidth(): Int = width + leftPad
+    override fun getIconHeight(): Int = height + 6
+}
+
+class FullWidthSeparatorUI : BasicSeparatorUI() {
+
+    override fun paint(g: Graphics, c: JComponent) {
+        val width = c.width
+        val height = c.height
+        g.color = Color(215, 215, 215)
+        g.drawLine(0, height / 2, width, height / 2)
+    }
+
+    override fun getPreferredSize(c: JComponent): Dimension {
+        return Dimension(0, 3)
+    }
+}
