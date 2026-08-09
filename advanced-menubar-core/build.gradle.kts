@@ -34,21 +34,24 @@ compose.resources {
 
 val nativeResourceDir = layout.projectDirectory.dir("src/main/resources/advanced-menubar/native")
 
-val buildNativeMacOs = tasks.register<Exec>("Build Native macOS") {
-    description = "Compiles the Objective-C JNI bridge for macOS arm64 and x64"
-    group = "build"
-    enabled = Os.isFamily(Os.FAMILY_MAC)
-    val nativeDir = layout.projectDirectory.dir("src/main/native/macos")
-    inputs.dir(nativeDir)
-    outputs.dir(nativeResourceDir)
-    workingDir(nativeDir)
-    commandLine("bash", "build.sh")
-}
+val buildNativeMacOs =
+    tasks.register<Exec>("Build Native macOS") {
+        description = "Compiles the Objective-C JNI bridge for macOS arm64 and x64"
+        group = "build"
+        enabled = Os.isFamily(Os.FAMILY_MAC)
+        val nativeDir = layout.projectDirectory.dir("src/main/native/macos")
+        inputs.dir(nativeDir)
+        outputs.dir(nativeResourceDir)
+        workingDir(nativeDir)
+        commandLine("bash", "build.sh")
+    }
 
 tasks.processResources {
     dependsOn(buildNativeMacOs)
 }
 
 tasks.configureEach {
-    if (name == "sourcesJar") dependsOn(buildNativeMacOs)
+    if (name == "sourcesJar") {
+        dependsOn(buildNativeMacOs)
+    }
 }
