@@ -25,11 +25,11 @@ import java.awt.Color
 import java.awt.Component
 import java.awt.Dimension
 import java.awt.Font
-import java.awt.Toolkit
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.Insets
 import java.awt.RenderingHints
+import java.awt.Toolkit
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
 import java.awt.geom.Path2D
@@ -523,10 +523,14 @@ class SmoothArrowIcon(
     private val width: Int = 4,
     private val height: Int = 6,
     private val leftPad: Int = 20,
-    private val color: Color = Color(60, 60, 60)
+    private val color: Color = Color(60, 60, 60),
 ) : Icon {
-
-    override fun paintIcon(c: Component, g: Graphics, x: Int, y: Int) {
+    override fun paintIcon(
+        c: Component,
+        g: Graphics,
+        x: Int,
+        y: Int,
+    ) {
         val g2 = g.create() as Graphics2D
         try {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
@@ -536,11 +540,12 @@ class SmoothArrowIcon(
             val ax = x + leftPad
             val ay = y + (iconHeight - height) / 2
 
-            val path = Path2D.Float().apply {
-                moveTo(ax.toDouble(), ay.toDouble())
-                lineTo((ax + width).toDouble(), (ay + height / 2).toDouble())
-                lineTo(ax.toDouble(), (ay + height).toDouble())
-            }
+            val path =
+                Path2D.Float().apply {
+                    moveTo(ax.toDouble(), ay.toDouble())
+                    lineTo((ax + width).toDouble(), (ay + height / 2).toDouble())
+                    lineTo(ax.toDouble(), (ay + height).toDouble())
+                }
             g2.draw(path)
         } finally {
             g2.dispose()
@@ -548,19 +553,20 @@ class SmoothArrowIcon(
     }
 
     override fun getIconWidth(): Int = width + leftPad
+
     override fun getIconHeight(): Int = height + 6
 }
 
 class FullWidthSeparatorUI : BasicSeparatorUI() {
-
-    override fun paint(g: Graphics, c: JComponent) {
+    override fun paint(
+        g: Graphics,
+        c: JComponent,
+    ) {
         val width = c.width
         val height = c.height
         g.color = Color(215, 215, 215)
         g.drawLine(0, height / 2, width, height / 2)
     }
 
-    override fun getPreferredSize(c: JComponent): Dimension {
-        return Dimension(0, 3)
-    }
+    override fun getPreferredSize(c: JComponent): Dimension = Dimension(0, 3)
 }
