@@ -33,4 +33,4 @@ Standard accelerators follow desktop conventions: the platform menu modifier (Ct
 Linux), Ctrl+Y for Redo, Ctrl+H for Replace, F3/Shift+F3 for Find Next/Previous, F11 for fullscreen,
 and F1 for Help. A custom `MenuShortcut` is used exactly as declared.
 
-<img alt="AWT Sample Windows with MenuBar on Windows" src="/assets/awt-windows.png" style="border-radius:15px"/>
+<img alt="AWT Sample Windows with MenuBar on Windows" src="assets/awt-windows.png" style="border-radius:15px"/>

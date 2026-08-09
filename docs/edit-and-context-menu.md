@@ -53,4 +53,4 @@ the user or another application changed the pasteboard in the meantime.
 menu follows the application theme. Pass `null` to keep the current AppKit appearance. When the JNI
 bridge cannot load, Compose's original text context menu remains active.
 
-<img alt="Native right-click menu on macOS" src="/assets/text-context.png" style="border-radius:15px"/>
+<img alt="Native right-click menu on macOS" src="assets/text-context.png" style="border-radius:15px"/>
