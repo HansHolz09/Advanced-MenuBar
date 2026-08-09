@@ -109,10 +109,10 @@ same theme. If the native bridge is unavailable, text fields keep Compose's norm
 
 ## Documentation
 
-The [project documentation](docs/index.md) covers backend selection, every DSL group, native Edit
+The [project documentation](https://hansholz09.github.io/Advanced-MenuBar/) covers backend selection, every DSL group, native Edit
 behavior, context menus, icons, shortcuts, localization, GraalVM packaging, limitations, and sample
-applications. Start with the [Quickstart](docs/quickstart.md) or open the
-[DSL reference](docs/api-reference.md).
+applications. Start with the [Quickstart](https://hansholz09.github.io/Advanced-MenuBar/quickstart/) or open the
+[DSL reference](https://hansholz09.github.io/Advanced-MenuBar/api-reference/).
 
 ## License
 
