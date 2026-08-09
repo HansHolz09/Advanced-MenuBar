@@ -38,4 +38,4 @@ taoApplication {
 Menu ownership follows `state.isActive`, and `DefaultMacMenuBar` reads fullscreen state directly
 from the Tao scope. There is no Swing renderer or AWT recovery path in this backend.
 
-<img alt="Tao Sample Window with MenuBar" src="assets/tao-window.png" style="border-radius:15px"/>
+![Tao Sample Window with MenuBar](assets/tao-window.png)

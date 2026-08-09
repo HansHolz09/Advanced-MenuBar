@@ -4,7 +4,7 @@ Advanced Menubar lets Compose applications use real AppKit menus while keeping m
 state in Kotlin. It handles process-wide menu ownership, standard macOS actions, Compose edit
 commands, localization, and native text popups.
 
-<img alt="Overview of Advanced MenuBar" src="assets/overview.png" style="border-radius:15px"/>
+![Overview of Advanced MenuBar](assets/overview.png)
 
 ## What it covers
 

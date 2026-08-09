@@ -5,6 +5,7 @@ site_author = "Hans Holz"
 copyright = "Copyright &copy; 2026 Hans Holz"
 repo_url = "https://github.com/HansHolz09/Advanced-MenuBar"
 repo_name = "Advanced-MenuBar"
+extra_css = ["stylesheets/extra.css"]
 nav = [
   { "Overview" = "index.md" },
   { "Quickstart" = "quickstart.md" },

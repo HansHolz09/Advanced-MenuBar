@@ -27,4 +27,4 @@ and Emoji & Symbols. Availability and presentation are controlled by the running
 
 For a different structure, copy the small declaration into `AdvancedMacMenuBar` and customize it.
 
-<img alt="Default application menu on macOS" src="assets/default-application.png" style="border-radius:15px"/>
+![Default application menu on macOS](assets/default-application.png)
