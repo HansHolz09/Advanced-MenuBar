@@ -1,5 +1,6 @@
 package dev.hansholz.advancedmenubar
 
+import TipsIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -58,14 +59,11 @@ fun FrameWindowScope.DefaultMacMenuBar(
 
     val majorVersion =
         remember {
-            System
-                .getProperty("os.version")
-                .split('.')
-                .firstOrNull()
-                ?.toIntOrNull() ?: 0
+            System.getProperty("os.version").substringBefore('.').toIntOrNull() ?: 0
         }
 
     fun symbol(name: String): MenuIcon? = if (majorVersion >= 26) SFSymbol(name) else null
+    val tipsIcon = rememberMenuIconFrom(TipsIcon)
 
     AdvancedMacMenuBar(appName) {
         MacApplicationMenu {
@@ -124,7 +122,7 @@ fun FrameWindowScope.DefaultMacMenuBar(
 
         if (helpMenu) {
             HelpMenu {
-                onHelpClick?.let { AppHelp(onClick = it) }
+                onHelpClick?.let { AppHelp(onClick = it, icon = tipsIcon) }
             }
         }
     }

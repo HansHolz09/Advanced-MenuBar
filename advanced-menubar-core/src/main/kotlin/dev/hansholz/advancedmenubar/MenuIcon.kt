@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalDensity
@@ -15,6 +16,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Image
+import kotlin.math.min
 
 /** Describes an icon that can be rendered by a menu backend. */
 sealed interface MenuIcon {
@@ -63,6 +65,7 @@ sealed interface MenuIcon {
 
 /**
  * Rasterizes [imageVector] into a high-resolution PNG sized like a native SF Symbol menu icon.
+ * The vector keeps its aspect ratio and is centered within the square image.
  *
  * Auto-mirrored vectors follow the current layout direction. Remember the result at the call site
  * by calling this function from composition rather than recreating PNG data manually.
@@ -85,6 +88,20 @@ fun rememberMenuIconFrom(
             val ib = ImageBitmap(px, px)
             val canvas = Canvas(ib)
             val drawScope = CanvasDrawScope()
+            val sourceWidth = imageVector.defaultWidth.value
+            val sourceHeight = imageVector.defaultHeight.value
+            val scale =
+                if (sourceWidth > 0f && sourceHeight > 0f) {
+                    min(px / sourceWidth, px / sourceHeight)
+                } else {
+                    1f
+                }
+            val iconSize =
+                if (sourceWidth > 0f && sourceHeight > 0f) {
+                    Size(sourceWidth * scale, sourceHeight * scale)
+                } else {
+                    Size(px.toFloat(), px.toFloat())
+                }
 
             drawScope.draw(
                 density = rasterDensity,
@@ -92,7 +109,12 @@ fun rememberMenuIconFrom(
                 canvas = canvas,
                 size = Size(px.toFloat(), px.toFloat()),
             ) {
-                with(painter) { draw(Size(px.toFloat(), px.toFloat())) }
+                translate(
+                    left = (px - iconSize.width) / 2f,
+                    top = (px - iconSize.height) / 2f,
+                ) {
+                    with(painter) { draw(iconSize) }
+                }
             }
 
             Image

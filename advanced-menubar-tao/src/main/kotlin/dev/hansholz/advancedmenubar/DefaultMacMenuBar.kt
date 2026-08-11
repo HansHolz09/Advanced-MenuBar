@@ -1,5 +1,6 @@
 package dev.hansholz.advancedmenubar
 
+import TipsIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import dev.hansholz.advancedmenubar.MenuIcon.SFSymbol
@@ -40,6 +41,7 @@ fun TaoDecoratedWindowScope.DefaultMacMenuBar(
         }
 
     fun symbol(name: String): MenuIcon? = if (majorVersion >= 26) SFSymbol(name) else null
+    val tipsIcon = rememberMenuIconFrom(TipsIcon)
 
     AdvancedMacMenuBar(appName) {
         MacApplicationMenu {
@@ -98,7 +100,7 @@ fun TaoDecoratedWindowScope.DefaultMacMenuBar(
 
         if (helpMenu) {
             HelpMenu {
-                onHelpClick?.let { AppHelp(onClick = it) }
+                onHelpClick?.let { AppHelp(onClick = it, icon = tipsIcon) }
             }
         }
     }
