@@ -44,26 +44,6 @@ fun main() =
                     val checkboxes = List(3) { remember { mutableStateOf(it != 0) } }
                     val textFieldState = rememberTextFieldState()
 
-                    key(language.value) {
-                        when (selectedMenu.value) {
-                            0 ->
-                                MenuBar(
-                                    customMenus = customMenus,
-                                    checkboxes = checkboxes,
-                                    textFieldState = textFieldState,
-                                ) {
-                                    clickedItems += it
-                                }
-                            1 ->
-                                DefaultMacMenuBar(
-                                    onAboutClick = { clickedItems += "About" },
-                                    onSettingsClick = { clickedItems += "Settings" },
-                                    onHelpClick = { clickedItems += "Help" },
-                                )
-                            2 -> FullMacMenuBar("Advanced MenuBar")
-                        }
-                    }
-
                     NativeTextContextMenuProvider(
                         isDark = isDark.value,
                         customActions =
@@ -77,6 +57,25 @@ fun main() =
                                 ) { clickedItems += "Second Custom Context Item" },
                             ),
                     ) {
+                        key(language.value) {
+                            when (selectedMenu.value) {
+                                0 ->
+                                    MenuBar(
+                                        customMenus = customMenus,
+                                        checkboxes = checkboxes,
+                                        textFieldState = textFieldState,
+                                    ) {
+                                        clickedItems += it
+                                    }
+                                1 ->
+                                    DefaultMacMenuBar(
+                                        onAboutClick = { clickedItems += "About" },
+                                        onSettingsClick = { clickedItems += "Settings" },
+                                        onHelpClick = { clickedItems += "Help" },
+                                    )
+                                2 -> FullMacMenuBar("Advanced MenuBar")
+                            }
+                        }
                         App(
                             language = language,
                             isDark = isDark,

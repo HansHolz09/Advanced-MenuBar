@@ -101,6 +101,8 @@ NativeTextContextMenuProvider(
         },
     ),
 ) {
+    DefaultMacMenuBar()
+
     Column {
         OutlinedTextField(state = textState)
         SelectionContainer {
@@ -112,7 +114,12 @@ NativeTextContextMenuProvider(
 
 On macOS, `isDark` changes the appearance of the entire `NSApplication` so all native menus use the
 same theme. Editable fields and selectable read-only text receive their corresponding native AppKit
-menus. If the native bridge is unavailable, Compose's normal context menu remains active.
+menus. A `DefaultMacMenuBar` in the provider scope enables its Edit commands only while a Compose
+text input session is active; this uses the same Compose API with AWT and Tao and supports both
+state-based and legacy Compose text fields. Outside the provider, the commands remain enabled as
+before; custom `AdvancedMacMenuBar`/`CompatibilityMenuBar` declarations are unchanged. If the native
+bridge is unavailable, Compose's normal context menu remains active. See [Text context menus](https://hansholz09.github.io/Advanced-MenuBar/text-context-menu)
+for details and limitations.
 
 ## Documentation
 

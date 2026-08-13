@@ -25,6 +25,11 @@ When `onAboutClick` is absent, AppKit opens its standard About panel. Settings i
 a callback exists. macOS may extend Edit with system-provided Writing Tools, AutoFill, Dictation,
 and Emoji & Symbols. Availability and presentation are controlled by the running operating system.
 
+When declared inside `NativeTextContextMenuProvider`, the default Cut, Copy, Paste, Undo, Redo,
+Delete, and Select All entries are enabled only while an editable Compose text field owns a text
+input session. Without the provider they remain enabled for backward compatibility. This behavior
+is identical with the AWT and Tao backends; see [Text context menus](text-context-menu.md#default-edit-menu-state).
+
 For a different structure, copy the small declaration into `AdvancedMacMenuBar` and customize it.
 
 ![Default application menu on macOS](assets/default-application.png)

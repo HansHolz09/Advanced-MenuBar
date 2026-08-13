@@ -1,3 +1,5 @@
+@file:OptIn(InternalAdvancedMenuBarApi::class)
+
 package dev.hansholz.advancedmenubar
 
 import TipsIcon
@@ -12,6 +14,8 @@ import org.jetbrains.skiko.hostOs
  * Nucleus Tao decorated window.
  *
  * Fullscreen and active-window state are read directly from the Tao scope; AWT is not used.
+ * Inside [NativeTextContextMenuProvider], Edit entries follow Compose's active text-input session;
+ * outside it they remain enabled.
  *
  * @param appName name used in application-specific localized labels.
  * @param onAboutClick custom About action, or `null` for AppKit's standard About panel.
@@ -42,6 +46,7 @@ fun TaoDecoratedWindowScope.DefaultMacMenuBar(
 
     fun symbol(name: String): MenuIcon? = if (majorVersion >= 26) SFSymbol(name) else null
     val tipsIcon = rememberMenuIconFrom(TipsIcon)
+    val editCommandsEnabled = defaultEditMenuEnabled()
 
     AdvancedMacMenuBar(appName) {
         MacApplicationMenu {
@@ -62,14 +67,14 @@ fun TaoDecoratedWindowScope.DefaultMacMenuBar(
 
         if (editMenu) {
             EditMenu {
-                Undo(icon = symbol("arrow.uturn.backward"))
-                Redo(icon = symbol("arrow.uturn.forward"))
+                Undo(enabled = editCommandsEnabled, icon = symbol("arrow.uturn.backward"))
+                Redo(enabled = editCommandsEnabled, icon = symbol("arrow.uturn.forward"))
                 Separator()
-                Cut(icon = symbol("scissors"))
-                Copy(icon = symbol("doc.on.doc"))
-                Paste(icon = symbol("doc.on.clipboard"))
-                Delete(icon = symbol("delete.left"))
-                SelectAll(icon = symbol("character.textbox"))
+                Cut(enabled = editCommandsEnabled, icon = symbol("scissors"))
+                Copy(enabled = editCommandsEnabled, icon = symbol("doc.on.doc"))
+                Paste(enabled = editCommandsEnabled, icon = symbol("doc.on.clipboard"))
+                Delete(enabled = editCommandsEnabled, icon = symbol("delete.left"))
+                SelectAll(enabled = editCommandsEnabled, icon = symbol("character.textbox"))
             }
         }
 

@@ -53,26 +53,6 @@ fun main() {
                         val checkboxes = List(3) { remember { mutableStateOf(it != 0) } }
                         val textFieldState = rememberTextFieldState()
 
-                        key(language.value) {
-                            when (selectedMenu.value) {
-                                0 ->
-                                    MenuBar(
-                                        appName = "Advanced MenuBar",
-                                        customMenus = customMenus,
-                                        checkboxes = checkboxes,
-                                        textFieldState = textFieldState,
-                                    ) { clickedItems += it }
-                                1 ->
-                                    DefaultMacMenuBar(
-                                        appName = "Advanced MenuBar",
-                                        onAboutClick = { clickedItems += "About" },
-                                        onSettingsClick = { clickedItems += "Settings" },
-                                        onHelpClick = { clickedItems += "Help" },
-                                    )
-                                else -> FullMacMenuBar("Advanced MenuBar")
-                            }
-                        }
-
                         WindowScaffold(
                             titleBar = { Box(Modifier.fillMaxWidth().height(32.dp).windowDragArea()) },
                             titleBarPlacement =
@@ -93,6 +73,25 @@ fun main() {
                                         },
                                     ),
                             ) {
+                                key(language.value) {
+                                    when (selectedMenu.value) {
+                                        0 ->
+                                            MenuBar(
+                                                appName = "Advanced MenuBar",
+                                                customMenus = customMenus,
+                                                checkboxes = checkboxes,
+                                                textFieldState = textFieldState,
+                                            ) { clickedItems += it }
+                                        1 ->
+                                            DefaultMacMenuBar(
+                                                appName = "Advanced MenuBar",
+                                                onAboutClick = { clickedItems += "About" },
+                                                onSettingsClick = { clickedItems += "Settings" },
+                                                onHelpClick = { clickedItems += "Help" },
+                                            )
+                                        else -> FullMacMenuBar("Advanced MenuBar")
+                                    }
+                                }
                                 App(
                                     language = language,
                                     isDark = isDark,

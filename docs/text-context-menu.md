@@ -11,6 +11,8 @@ NativeTextContextMenuProvider(
         ContextMenuAction("Look up in project", "magnifyingglass") { lookUp() },
     ),
 ) {
+    DefaultMacMenuBar()
+
     Column {
         OutlinedTextField(state = textState)
         SelectionContainer {
@@ -19,6 +21,14 @@ NativeTextContextMenuProvider(
     }
 }
 ```
+
+## Default Edit menu state
+
+A `DefaultMacMenuBar` declared inside the provider scope disables Undo, Redo, Cut, Copy, Paste,
+Delete, and Select All when no editable Compose text field has an active platform text-input
+session. All commands are enabled together when such a session starts. If the default menu is
+outside the provider (or the provider is not used) the entries remain enabled as before. Custom
+`AdvancedMacMenuBar` and `CompatibilityMenuBar` Edit declarations keep their explicit state.
 
 ## Editable text
 

@@ -20,5 +20,11 @@ AppKit transformations are forwarded directly to Compose's current text-state ed
 Compose paste action and a temporary pasteboard value are retained only as a compatibility fallback
 for unknown Compose text-manager implementations.
 
+The text context-menu provider also intercepts Compose's common platform text-input sessions and
+exposes whether one is active to a `DefaultMacMenuBar` in its scope. This keeps AWT and Tao on the
+same path and covers state-based, legacy, and secure Compose text fields. The original input request
+is forwarded unchanged, so IME handling, transformations, context-menu actions, and window menu
+ownership continue through their existing implementations.
+
 The native bridge uses some availability-checked AppKit behavior for system-generated items. Their
 exact presence and appearance may vary by macOS release.

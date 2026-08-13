@@ -18,6 +18,17 @@ AppKit can execute callback-free selectors through its responder chain. Swing ca
 callback for each standard action rendered on Windows/Linux. Services and the macOS application
 menu have no Swing equivalent.
 
+## Default Edit items do not follow text focus
+
+Place `DefaultMacMenuBar` inside the `NativeTextContextMenuProvider` content scope. Outside that
+scope its Edit items intentionally remain enabled, while custom `AdvancedMacMenuBar` and
+`CompatibilityMenuBar` declarations keep their explicitly configured state.
+
+Tracking follows Compose platform text-input sessions. Read-only and disabled fields therefore do
+not activate the items. A custom editor that handles keys without Compose platform text input cannot
+be detected. A field configured not to start input on programmatic focus is detected once it starts
+an input session, for example after direct interaction.
+
 ## An icon or property is missing
 
 SF Symbols are native macOS assets. Swing supports PNG/file icons only and intentionally omits
