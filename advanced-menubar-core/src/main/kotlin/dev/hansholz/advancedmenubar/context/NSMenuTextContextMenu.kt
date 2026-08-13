@@ -26,6 +26,7 @@ import composeadvancedmenubar.generated.resources.Res
 import composeadvancedmenubar.generated.resources.edit_select_all
 import dev.hansholz.advancedmenubar.NativeTextContextMenuBridge.captureCurrentNsEvent
 import dev.hansholz.advancedmenubar.NativeTextContextMenuBridge.dispatchAsyncOnMain
+import dev.hansholz.advancedmenubar.utils.majorSystemVersion
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -88,7 +89,7 @@ internal class NSMenuTextContextMenu(
             val selectAllAction =
                 ContextMenuAction(
                     label = selectAllText,
-                    systemImageName = selectAllIcon,
+                    systemImageName = if (majorSystemVersion == 26) selectAllIcon else null,
                     enabled = tmSelectAll?.enabled == true,
                     action = tmSelectAll?.execute ?: {},
                 )

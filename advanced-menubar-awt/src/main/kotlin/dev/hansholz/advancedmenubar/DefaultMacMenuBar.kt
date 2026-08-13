@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.WindowPlacement
 import dev.hansholz.advancedmenubar.MenuIcon.SFSymbol
+import dev.hansholz.advancedmenubar.utils.majorSystemVersion
 import org.jetbrains.skiko.hostOs
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -61,18 +62,17 @@ fun FrameWindowScope.DefaultMacMenuBar(
         onDispose { window.removeComponentListener(listener) }
     }
 
-    val majorVersion =
-        remember {
-            System.getProperty("os.version").substringBefore('.').toIntOrNull() ?: 0
-        }
+    fun symbol(name: String): MenuIcon? = if (majorSystemVersion >= 26) SFSymbol(name) else null
 
-    fun symbol(name: String): MenuIcon? = if (majorVersion >= 26) SFSymbol(name) else null
-    val tipsIcon = rememberMenuIconFrom(TipsIcon)
+    fun symbol26(name: String): MenuIcon? = if (majorSystemVersion == 26) SFSymbol(name) else null
+
+    val tipsIcon = if (majorSystemVersion >= 26) rememberMenuIconFrom(TipsIcon) else null
+
     val editCommandsEnabled = defaultEditMenuEnabled()
 
     AdvancedMacMenuBar(appName) {
         MacApplicationMenu {
-            About(onClick = onAboutClick, icon = symbol("info.circle"))
+            About(onClick = onAboutClick, icon = symbol26("info.circle"))
             Separator()
             onSettingsClick?.let {
                 Settings(onClick = it, icon = symbol("gear"))
@@ -89,14 +89,14 @@ fun FrameWindowScope.DefaultMacMenuBar(
 
         if (editMenu) {
             EditMenu {
-                Undo(enabled = editCommandsEnabled, icon = symbol("arrow.uturn.backward"))
-                Redo(enabled = editCommandsEnabled, icon = symbol("arrow.uturn.forward"))
+                Undo(enabled = editCommandsEnabled, icon = symbol26("arrow.uturn.backward"))
+                Redo(enabled = editCommandsEnabled, icon = symbol26("arrow.uturn.forward"))
                 Separator()
-                Cut(enabled = editCommandsEnabled, icon = symbol("scissors"))
-                Copy(enabled = editCommandsEnabled, icon = symbol("doc.on.doc"))
-                Paste(enabled = editCommandsEnabled, icon = symbol("doc.on.clipboard"))
-                Delete(enabled = editCommandsEnabled, icon = symbol("delete.left"))
-                SelectAll(enabled = editCommandsEnabled, icon = symbol("character.textbox"))
+                Cut(enabled = editCommandsEnabled, icon = symbol26("scissors"))
+                Copy(enabled = editCommandsEnabled, icon = symbol26("doc.on.doc"))
+                Paste(enabled = editCommandsEnabled, icon = symbol26("doc.on.clipboard"))
+                Delete(enabled = editCommandsEnabled, icon = symbol26("delete.left"))
+                SelectAll(enabled = editCommandsEnabled, icon = symbol26("character.textbox"))
             }
         }
 
@@ -105,7 +105,7 @@ fun FrameWindowScope.DefaultMacMenuBar(
                 ToggleFullScreen(
                     state = isFullscreen,
                     icon =
-                        symbol(
+                        symbol26(
                             if (isFullscreen) {
                                 "arrow.down.right.and.arrow.up.left.rectangle"
                             } else {

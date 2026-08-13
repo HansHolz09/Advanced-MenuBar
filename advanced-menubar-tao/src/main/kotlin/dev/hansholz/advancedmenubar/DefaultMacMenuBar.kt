@@ -4,8 +4,8 @@ package dev.hansholz.advancedmenubar
 
 import TipsIcon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import dev.hansholz.advancedmenubar.MenuIcon.SFSymbol
+import dev.hansholz.advancedmenubar.utils.majorSystemVersion
 import dev.nucleusframework.window.tao.TaoDecoratedWindowScope
 import org.jetbrains.skiko.hostOs
 
@@ -39,18 +39,17 @@ fun TaoDecoratedWindowScope.DefaultMacMenuBar(
 ) {
     if (!hostOs.isMacOS) return
 
-    val majorVersion =
-        remember {
-            System.getProperty("os.version").substringBefore('.').toIntOrNull() ?: 0
-        }
+    fun symbol(name: String): MenuIcon? = if (majorSystemVersion >= 26) SFSymbol(name) else null
 
-    fun symbol(name: String): MenuIcon? = if (majorVersion >= 26) SFSymbol(name) else null
-    val tipsIcon = rememberMenuIconFrom(TipsIcon)
+    fun symbol26(name: String): MenuIcon? = if (majorSystemVersion == 26) SFSymbol(name) else null
+
+    val tipsIcon = if (majorSystemVersion >= 26) rememberMenuIconFrom(TipsIcon) else null
+
     val editCommandsEnabled = defaultEditMenuEnabled()
 
     AdvancedMacMenuBar(appName) {
         MacApplicationMenu {
-            About(onClick = onAboutClick, icon = symbol("info.circle"))
+            About(onClick = onAboutClick, icon = symbol26("info.circle"))
             Separator()
             onSettingsClick?.let {
                 Settings(onClick = it, icon = symbol("gear"))
@@ -67,14 +66,14 @@ fun TaoDecoratedWindowScope.DefaultMacMenuBar(
 
         if (editMenu) {
             EditMenu {
-                Undo(enabled = editCommandsEnabled, icon = symbol("arrow.uturn.backward"))
-                Redo(enabled = editCommandsEnabled, icon = symbol("arrow.uturn.forward"))
+                Undo(enabled = editCommandsEnabled, icon = symbol26("arrow.uturn.backward"))
+                Redo(enabled = editCommandsEnabled, icon = symbol26("arrow.uturn.forward"))
                 Separator()
-                Cut(enabled = editCommandsEnabled, icon = symbol("scissors"))
-                Copy(enabled = editCommandsEnabled, icon = symbol("doc.on.doc"))
-                Paste(enabled = editCommandsEnabled, icon = symbol("doc.on.clipboard"))
-                Delete(enabled = editCommandsEnabled, icon = symbol("delete.left"))
-                SelectAll(enabled = editCommandsEnabled, icon = symbol("character.textbox"))
+                Cut(enabled = editCommandsEnabled, icon = symbol26("scissors"))
+                Copy(enabled = editCommandsEnabled, icon = symbol26("doc.on.doc"))
+                Paste(enabled = editCommandsEnabled, icon = symbol26("doc.on.clipboard"))
+                Delete(enabled = editCommandsEnabled, icon = symbol26("delete.left"))
+                SelectAll(enabled = editCommandsEnabled, icon = symbol26("character.textbox"))
             }
         }
 
@@ -83,7 +82,7 @@ fun TaoDecoratedWindowScope.DefaultMacMenuBar(
                 ToggleFullScreen(
                     state = state.isFullscreen,
                     icon =
-                        symbol(
+                        symbol26(
                             if (state.isFullscreen) {
                                 "arrow.down.right.and.arrow.up.left.rectangle"
                             } else {

@@ -677,6 +677,34 @@ static NSMenuItem *ambSystemMenuItem(NSString *title, SEL action, NSString *keyE
     return [[NSMenuItem alloc] initWithTitle:title action:action keyEquivalent:keyEquivalent];
 }
 
+static BOOL ambWritingToolsAreAutomaticallyInserted(void) {
+    if (![NSMenuItem respondsToSelector:@selector(writingToolsItems)]) return NO;
+
+    NSWindow *probeWindow =
+        [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 1, 1)
+                                   styleMask:NSWindowStyleMaskBorderless
+                                     backing:NSBackingStoreBuffered
+                                       defer:NO];
+    NSTextView *probeView = [[NSTextView alloc] initWithFrame:probeWindow.contentView.bounds];
+    probeView.string = @"Writing Tools";
+    probeView.selectedRange = NSMakeRange(0, probeView.string.length);
+    [probeWindow.contentView addSubview:probeView];
+    [probeWindow makeFirstResponder:probeView];
+
+    NSEvent *event =
+        [NSEvent mouseEventWithType:NSEventTypeRightMouseDown
+                           location:NSMakePoint(0.5, 0.5)
+                      modifierFlags:0
+                          timestamp:NSProcessInfo.processInfo.systemUptime
+                       windowNumber:probeWindow.windowNumber
+                            context:nil
+                        eventNumber:0
+                         clickCount:1
+                           pressure:1.0];
+    NSMenu *automaticMenu = [probeView menuForEvent:event];
+    return automaticMenu != nil && ambMenuContainsAction(automaticMenu, @"showWritingTools:");
+}
+
 static NSArray<NSMenuItem *> *ambAutomaticEditItems(NSMenu *mainMenu) {
     NSMenu *source = nil;
     for (NSMenuItem *topItem in mainMenu.itemArray) {
@@ -700,7 +728,7 @@ static NSArray<NSMenuItem *> *ambAutomaticEditItems(NSMenu *mainMenu) {
         if (autoFill && autoFillItem == nil) autoFillItem = item.copy;
     }
 
-    if (writingToolsItem == nil && [NSMenuItem respondsToSelector:@selector(writingToolsItems)]) {
+    if (writingToolsItem == nil && ambWritingToolsAreAutomaticallyInserted()) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability-new"
         writingToolsItem = NSMenuItem.writingToolsItems.firstObject.copy;
