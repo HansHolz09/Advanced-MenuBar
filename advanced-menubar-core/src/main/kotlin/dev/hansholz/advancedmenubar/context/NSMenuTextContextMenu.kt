@@ -82,6 +82,8 @@ internal class NSMenuTextContextMenu(
             val tmPaste = tm.paste
             val tmSelectAll = tm.selectAll
             val extras = currentShowExtraOptions
+            val composeAdapter = tm.composeAdapter()
+            val isEditable = composeAdapter.isEditable
 
             val selectAllAction =
                 ContextMenuAction(
@@ -92,10 +94,12 @@ internal class NSMenuTextContextMenu(
                 )
 
             val onTextChange: ((String) -> Unit)? =
-                tmPaste?.takeIf { it.enabled }?.let { paste ->
+                tmPaste?.takeIf { isEditable }?.let { paste ->
                     { replacement ->
                         if (replacement != selectedText) {
-                            NativeTextContextMenuBridge.applyViaClipboard(replacement, paste.execute)
+                            if (!composeAdapter.replaceSelectedText(replacement)) {
+                                NativeTextContextMenuBridge.applyViaClipboard(replacement, paste.execute)
+                            }
                         }
                     }
                 }
@@ -103,6 +107,7 @@ internal class NSMenuTextContextMenu(
             dispatchAsyncOnMain {
                 NativeTextContextMenuBridge.showForTextField(
                     selectedText = selectedText,
+                    isEditable = isEditable,
                     nsEventAddress = nsEventAddr,
                     contentHeightPts = currentWindowInfo.containerSize.height.toDouble() / dens,
                     contentWidthPts = currentWindowInfo.containerSize.width.toDouble() / dens,

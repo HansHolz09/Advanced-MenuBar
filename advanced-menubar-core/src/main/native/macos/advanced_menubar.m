@@ -79,25 +79,14 @@ static void ambWakeTaoEventLoop(void) {
 
 @interface AdvancedMenubarTextDelegate : NSObject <NSTextViewDelegate>
 @property(nonatomic) int64_t callbackId;
+@property(nonatomic, copy) NSString *originalText;
+@property(nonatomic, copy) NSString *changedText;
 @end
 
 @implementation AdvancedMenubarTextDelegate
 - (void)textDidChange:(NSNotification *)notification {
-    if (self.callbackId == 0) return;
-    int64_t callbackId = self.callbackId;
     NSString *text = [(NSTextView *)notification.object string] ?: @"";
-    dispatch_async(dispatch_get_main_queue(), ^{
-        JNIEnv *env = ambEnv();
-        if (env == NULL || gTextBridgeClass == NULL || gTextOnChanged == NULL) return;
-        jstring value = (*env)->NewStringUTF(env, text.UTF8String ?: "");
-        (*env)->CallStaticVoidMethod(env, gTextBridgeClass, gTextOnChanged,
-                                    (jlong)callbackId, value);
-        (*env)->DeleteLocalRef(env, value);
-        if ((*env)->ExceptionCheck(env)) {
-            (*env)->ExceptionDescribe(env);
-            (*env)->ExceptionClear(env);
-        }
-    });
+    self.changedText = [text isEqualToString:self.originalText ?: @""] ? nil : text;
 }
 @end
 
@@ -139,10 +128,10 @@ static void ambConfigureHiddenTextView(NSTextView *view) {
     view.textContainer.lineFragmentPadding = 0.0;
 }
 
-static AdvancedMenubarNoHitTextView *ambCreateHiddenTextView(void) {
+static AdvancedMenubarNoHitTextView *ambCreateHiddenTextView(BOOL editable) {
     AdvancedMenubarNoHitTextView *view =
         [[AdvancedMenubarNoHitTextView alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)];
-    view.editable = YES;
+    view.editable = editable;
     view.selectable = YES;
     view.richText = NO;
     ambConfigureHiddenTextView(view);
@@ -208,6 +197,62 @@ static void ambKeepBasicTextItems(NSMenu *menu) {
         if (item.separatorItem || ![allowed containsObject:ambActionName(item)]) [menu removeItem:item];
     }
     ambCleanupSeparators(menu);
+}
+
+static BOOL ambMenuContainsAnyAction(NSMenu *menu, NSSet<NSString *> *actions) {
+    for (NSMenuItem *item in menu.itemArray) {
+        if ([actions containsObject:ambActionName(item)]) return YES;
+        if (item.submenu != nil && ambMenuContainsAnyAction(item.submenu, actions)) return YES;
+    }
+    return NO;
+}
+
+static void ambRemoveSelectionOnlyTextItems(NSMenu *menu) {
+    static NSSet<NSString *> *actions;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        actions = [NSSet setWithArray:@[
+            @"uppercaseWord:", @"lowercaseWord:", @"capitalizeWord:",
+            @"startSpeaking:", @"stopSpeaking:"
+        ]];
+    });
+    for (NSMenuItem *item in menu.itemArray.copy) {
+        if (item.submenu != nil && ambMenuContainsAnyAction(item.submenu, actions)) {
+            [menu removeItem:item];
+        }
+    }
+    ambCleanupSeparators(menu);
+}
+
+static void ambRemoveReadOnlyEditingItems(NSMenu *menu) {
+    static NSSet<NSString *> *actions;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        actions = [NSSet setWithArray:@[@"cut:", @"paste:", @"selectAll:"]];
+    });
+    for (NSMenuItem *item in menu.itemArray.copy) {
+        if (item.submenu != nil) {
+            ambRemoveReadOnlyEditingItems(item.submenu);
+            if (item.submenu.numberOfItems == 0) [menu removeItem:item];
+        } else if (!item.separatorItem && [actions containsObject:ambActionName(item)]) {
+            [menu removeItem:item];
+        }
+    }
+    ambCleanupSeparators(menu);
+}
+
+static void ambReportTextChange(int64_t callbackId, NSString *text) {
+    if (callbackId == 0 || text == nil) return;
+    JNIEnv *env = ambEnv();
+    if (env == NULL || gTextBridgeClass == NULL || gTextOnChanged == NULL) return;
+    jstring value = (*env)->NewStringUTF(env, text.UTF8String ?: "");
+    (*env)->CallStaticVoidMethod(env, gTextBridgeClass, gTextOnChanged,
+                                (jlong)callbackId, value);
+    (*env)->DeleteLocalRef(env, value);
+    if ((*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionDescribe(env);
+        (*env)->ExceptionClear(env);
+    }
 }
 
 static NSInteger ambTextInsertIndex(NSMenu *menu) {
@@ -934,6 +979,7 @@ Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeShowTextCont
     JNIEnv *env,
     jclass clazz,
     jstring selectedText,
+    jboolean isEditable,
     jlong eventAddress,
     jdouble contentHeight,
     jdouble contentWidth,
@@ -948,7 +994,7 @@ Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeShowTextCont
     jint customActionCount,
     jboolean showExtraOptions,
     jlong textCallbackId) {
-    (void)clazz; (void)customActionCount; (void)eventAddress;
+    (void)clazz; (void)eventAddress;
     NSString *selected = ambNSString(env, selectedText) ?: @"";
     jsize count = labelsArray == NULL ? 0 : (*env)->GetArrayLength(env, labelsArray);
     NSMutableArray<NSString *> *labels = [NSMutableArray arrayWithCapacity:(NSUInteger)count];
@@ -996,8 +1042,8 @@ Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeShowTextCont
             double fieldW = MAX(1.0, MIN(MAX(1.0, right - left) - (fieldX - left), contentWidth - fieldX));
             double fieldH = MAX(1.0, MIN(MAX(1.0, bottom - top) - (fieldY - rawY), contentHeight - fieldY));
 
-            AdvancedMenubarNoHitTextView *textView = ambCreateHiddenTextView();
-            textView.string = selected.length > 0 ? selected : @" ";
+            AdvancedMenubarNoHitTextView *textView = ambCreateHiddenTextView(isEditable != JNI_FALSE);
+            textView.string = selected;
             textView.selectedRange = NSMakeRange(0, selected.length);
             textView.frame = NSMakeRect(fieldX, fieldY, fieldW, fieldH);
             ambConfigureHiddenTextView(textView);
@@ -1018,11 +1064,17 @@ Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeShowTextCont
             ambDebugMenu(menu, @"context-before-filter");
 
             if (showExtraOptions) ambRemoveExcludedTextItems(menu); else ambKeepBasicTextItems(menu);
+            if (isEditable != JNI_FALSE && selected.length == 0) {
+                ambRemoveSelectionOnlyTextItems(menu);
+            } else if (isEditable == JNI_FALSE) {
+                ambRemoveReadOnlyEditingItems(menu);
+            }
             ambDebugMenu(menu, @"context-after-filter");
             NSInteger insertion = ambTextInsertIndex(menu);
             NSInteger insertedCount = 0;
             for (NSInteger i = 0; i < count; i++) {
-                if (i == 1) {
+                NSInteger customStart = count - customActionCount;
+                if (i == customStart && insertion + insertedCount > 0) {
                     [menu insertItem:NSMenuItem.separatorItem
                              atIndex:MIN(insertion + insertedCount, menu.numberOfItems)];
                     insertedCount++;
@@ -1044,6 +1096,7 @@ Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeShowTextCont
             if (textCallbackId != 0) {
                 textDelegate = [[AdvancedMenubarTextDelegate alloc] init];
                 textDelegate.callbackId = textCallbackId;
+                textDelegate.originalText = textView.string;
                 textView.delegate = textDelegate;
             }
             if (menu.numberOfItems > 0 && event != nil) {
@@ -1057,6 +1110,9 @@ Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeShowTextCont
             if (![window makeFirstResponder:restoreResponder]) {
                 [window makeFirstResponder:contentView];
             }
+
+            NSString *changedText = textDelegate.changedText;
+            if (changedText != nil) ambReportTextChange(textDelegate.callbackId, changedText);
 
             // Retain a one-point anchor for asynchronous AppKit popovers.
             textView.frame = NSMakeRect(fieldX, fieldY + fieldH / 2.0, fieldW, 1.0);

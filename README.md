@@ -13,6 +13,7 @@ Two window backends are available:
   provided by the [Nucleus library](https://github.com/NucleusFramework/Nucleus).
 
 <img alt="Overview of Advanced MenuBar" src="docs/assets/overview.png"/>
+<img alt="Native right-click menu for non-editable text on old macOS" src="docs/assets/text-context-macos-old.png"/>
 
 ## Installation
 
@@ -100,12 +101,18 @@ NativeTextContextMenuProvider(
         },
     ),
 ) {
-    OutlinedTextField(state = textState)
+    Column {
+        OutlinedTextField(state = textState)
+        SelectionContainer {
+            Text("Selectable, read-only text")
+        }
+    }
 }
 ```
 
 On macOS, `isDark` changes the appearance of the entire `NSApplication` so all native menus use the
-same theme. If the native bridge is unavailable, text fields keep Compose's normal context menu.
+same theme. Editable fields and selectable read-only text receive their corresponding native AppKit
+menus. If the native bridge is unavailable, Compose's normal context menu remains active.
 
 ## Documentation
 

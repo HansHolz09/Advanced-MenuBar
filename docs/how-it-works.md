@@ -15,5 +15,10 @@ automatic Edit entries where available. The Swing renderer reads the same descri
 Windows/Linux accelerator conventions and only exposes capabilities supported by ordinary Swing
 menus.
 
+Native text popups use an editable or read-only `NSTextView` to match the Compose text owner.
+AppKit transformations are forwarded directly to Compose's current text-state editing path. The
+Compose paste action and a temporary pasteboard value are retained only as a compatibility fallback
+for unknown Compose text-manager implementations.
+
 The native bridge uses some availability-checked AppKit behavior for system-generated items. Their
 exact presence and appearance may vary by macOS release.

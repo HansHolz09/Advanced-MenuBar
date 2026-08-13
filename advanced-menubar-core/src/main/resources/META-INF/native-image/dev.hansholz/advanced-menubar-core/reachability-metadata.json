@@ -15,6 +15,32 @@
         { "name": "onTextChanged", "parameterTypes": ["long", "java.lang.String"] },
         { "name": "onDismissed", "parameterTypes": [] }
       ]
+    },
+    {
+      "type": "androidx.compose.foundation.text.ContextMenu_desktopKt$textManager$1",
+      "fields": [
+        { "name": "$this_textManager" }
+      ]
+    },
+    {
+      "type": "androidx.compose.foundation.text.ContextMenu_desktopKt$textManager$2",
+      "fields": [
+        { "name": "$this_textManager" }
+      ]
+    },
+    {
+      "type": "androidx.compose.foundation.text.selection.TextFieldSelectionManager",
+      "methods": [
+        { "name": "getEditable", "parameterTypes": [] },
+        { "name": "paste$foundation", "parameterTypes": ["androidx.compose.ui.text.AnnotatedString"] }
+      ]
+    },
+    {
+      "type": "androidx.compose.foundation.text.input.internal.selection.TextFieldSelectionState",
+      "methods": [
+        { "name": "getEditable$foundation", "parameterTypes": [] },
+        { "name": "onPasteEvent$foundation", "parameterTypes": ["androidx.compose.ui.text.AnnotatedString"] }
+      ]
     }
   ],
   "resources": [

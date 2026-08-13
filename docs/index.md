@@ -6,6 +6,8 @@ commands, localization, and native text popups.
 
 ![Overview of Advanced MenuBar](assets/overview.png)
 
+![Native right-click menu for non-editable text on old macOS](assets/text-context-macos-old.png)
+
 ## What it covers
 
 - a ready-to-use conventional macOS menu with `DefaultMacMenuBar`;
@@ -13,7 +15,7 @@ commands, localization, and native text popups.
 - submenus, sections, separators, actions, checkboxes, enabled state, and live Compose state;
 - AppKit Services, automatic window lists, Writing Tools, AutoFill, Dictation, and Emoji & Symbols;
 - native and custom shortcuts, SF Symbols, PNG/file/vector icons, tooltips, subtitles, and badges;
-- native context menus for Compose text fields;
+- native context menus for editable fields and selectable read-only text;
 - multiple AWT or Tao windows with focus-aware menu ownership;
 - a Swing renderer for Windows and Linux;
 - packaged JNI metadata and libraries for GraalVM Native Image.

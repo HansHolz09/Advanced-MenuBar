@@ -24,10 +24,11 @@ For a quicker development launch without building a distributable, use:
 ```
 
 The AWT sample demonstrates native, default, full, compatibility, and Swing menus; live custom
-menus; multiple windows; localization; icons; checkboxes; text editing; theme changes; and the
-native context menu. Run it on Windows or Linux to inspect platform accelerators and Swing
-capability differences.
+menus; multiple windows; localization; icons; checkboxes; editable text and a
+`SelectionContainer`; theme changes; and both native text context-menu variants. Run it on Windows
+or Linux to inspect platform accelerators and Swing capability differences.
 
-The Tao sample demonstrates the same AppKit menu behavior in a Nucleus Tao window without AWT.
+The Tao sample demonstrates the same AppKit menu and editable/read-only text context-menu behavior
+in a Nucleus Tao window without AWT.
 Packaged and GraalVM runs provide a more representative environment for macOS system integrations
 than the development `run` task.

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -163,6 +164,14 @@ fun App(
                                 )
                             }
                         }
+                    }
+                }
+                item {
+                    SelectionContainer {
+                        Text(
+                            text = "Select this read-only text and right-click it for the native non-editable text menu.",
+                            modifier = Modifier.padding(top = 15.dp),
+                        )
                     }
                 }
                 stickyHeader {

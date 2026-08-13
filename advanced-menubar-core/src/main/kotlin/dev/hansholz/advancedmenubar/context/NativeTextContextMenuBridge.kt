@@ -19,6 +19,7 @@ internal object NativeTextContextMenuBridge {
 
     fun showForTextField(
         selectedText: String,
+        isEditable: Boolean,
         nsEventAddress: Long,
         contentHeightPts: Double,
         contentWidthPts: Double,
@@ -32,7 +33,11 @@ internal object NativeTextContextMenuBridge {
         if (!NativeMenuBridge.isAvailable) return
         actions.clear()
         textCallbacks.clear()
-        val allActions = listOf(selectAllAction) + customActions
+        val allActions =
+            buildList {
+                if (isEditable) add(selectAllAction)
+                addAll(customActions)
+            }
         val actionIds =
             LongArray(allActions.size) { index ->
                 nextCallbackId.getAndIncrement().also {
@@ -49,6 +54,7 @@ internal object NativeTextContextMenuBridge {
 
         nativeShowTextContextMenu(
             selectedText = selectedText,
+            isEditable = isEditable,
             eventAddress = nsEventAddress,
             contentHeight = contentHeightPts,
             contentWidth = contentWidthPts,
@@ -103,6 +109,7 @@ internal object NativeTextContextMenuBridge {
     @JvmStatic
     private external fun nativeShowTextContextMenu(
         selectedText: String,
+        isEditable: Boolean,
         eventAddress: Long,
         contentHeight: Double,
         contentWidth: Double,

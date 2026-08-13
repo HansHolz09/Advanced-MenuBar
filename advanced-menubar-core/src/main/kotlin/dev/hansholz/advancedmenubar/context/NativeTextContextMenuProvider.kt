@@ -11,7 +11,9 @@ import dev.hansholz.advancedmenubar.NativeTextContextMenuBridge.dispatchAsyncOnM
 import org.jetbrains.skiko.hostOs
 
 /**
- * Replaces Compose text-field popups below [content] with the native macOS text context menu.
+ * Replaces Compose text popups below [content] with the matching native macOS text context menu.
+ * Editable fields use an editable AppKit text view; selectable read-only content uses a
+ * non-editable one.
  *
  * On Windows, Linux, or when the packaged JNI bridge cannot be loaded, this provider leaves the
  * normal Compose context menu untouched. On macOS, [isDark] updates the appearance of the entire
@@ -21,7 +23,7 @@ import org.jetbrains.skiko.hostOs
  * @param isDark dark/light application appearance, or `null` to make no appearance change.
  * @param showExtraOptions whether AppKit text services beyond Cut, Copy, and Paste remain visible.
  * @param customActions application actions inserted after the standard selection actions.
- * @param content content whose Compose text fields should use the provider.
+ * @param content content whose editable or selectable text should use the provider.
  */
 @Composable
 fun NativeTextContextMenuProvider(
