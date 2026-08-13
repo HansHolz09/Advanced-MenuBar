@@ -1111,8 +1111,8 @@ Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeShowTextCont
                 [window makeFirstResponder:contentView];
             }
 
-            NSString *changedText = textDelegate.changedText;
-            if (changedText != nil) ambReportTextChange(textDelegate.callbackId, changedText);
+            NSString *changedText = textDelegate.changedText.copy;
+            int64_t changedTextCallbackId = textDelegate.callbackId;
 
             // Retain a one-point anchor for asynchronous AppKit popovers.
             textView.frame = NSMakeRect(fieldX, fieldY + fieldH / 2.0, fieldW, 1.0);
@@ -1124,6 +1124,15 @@ Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeShowTextCont
             ambWakeTaoEventLoop();
 
             [contentView setNeedsDisplay:YES];
+            if (changedText != nil) {
+                // Updating a legacy BasicTextField can synchronously recompose and restart its
+                // input session. Wait until AppKit has completely unwound menu tracking and the
+                // temporary first responder has been restored before entering Compose again.
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    ambReportTextChange(changedTextCallbackId, changedText);
+                    ambWakeTaoEventLoop();
+                });
+            }
             JNIEnv *callbackEnv = ambEnv();
             if (callbackEnv != NULL && gTextBridgeClass != NULL && gTextOnDismissed != NULL) {
                 (*callbackEnv)->CallStaticVoidMethod(callbackEnv, gTextBridgeClass, gTextOnDismissed);
