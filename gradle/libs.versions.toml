@@ -5,7 +5,7 @@ ktlint = "14.2.0"
 material3 = "1.11.0-alpha07"
 materialSymbols = "2.2.1"
 mavenPublishVanniktech = "0.37.0"
-nucleus = "2.3.2"
+nucleus = "2.4.4"
 
 [libraries]
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-plugin" }
