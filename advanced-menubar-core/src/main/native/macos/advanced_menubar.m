@@ -80,13 +80,23 @@ static void ambWakeTaoEventLoop(void) {
 @interface AdvancedMenubarTextDelegate : NSObject <NSTextViewDelegate>
 @property(nonatomic) int64_t callbackId;
 @property(nonatomic, copy) NSString *originalText;
-@property(nonatomic, copy) NSString *changedText;
 @end
+
+static void ambReportTextChange(int64_t callbackId, NSString *text);
 
 @implementation AdvancedMenubarTextDelegate
 - (void)textDidChange:(NSNotification *)notification {
     NSString *text = [(NSTextView *)notification.object string] ?: @"";
-    self.changedText = [text isEqualToString:self.originalText ?: @""] ? nil : text;
+    if (self.callbackId == 0 || [text isEqualToString:self.originalText ?: @""]) return;
+    int64_t callbackId = self.callbackId;
+    NSString *changedText = text.copy;
+    // Writing Tools and the contact picker may change the retained temporary text view after
+    // the context menu has already closed. Report each change from the delegate instead of
+    // sampling it immediately after menu tracking returns.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        ambReportTextChange(callbackId, changedText);
+        ambWakeTaoEventLoop();
+    });
 }
 @end
 
@@ -1139,9 +1149,6 @@ Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeShowTextCont
                 [window makeFirstResponder:contentView];
             }
 
-            NSString *changedText = textDelegate.changedText.copy;
-            int64_t changedTextCallbackId = textDelegate.callbackId;
-
             // Retain a one-point anchor for asynchronous AppKit popovers.
             textView.frame = NSMakeRect(fieldX, fieldY + fieldH / 2.0, fieldW, 1.0);
             ambConfigureHiddenTextView(textView);
@@ -1152,15 +1159,6 @@ Java_dev_hansholz_advancedmenubar_NativeTextContextMenuBridge_nativeShowTextCont
             ambWakeTaoEventLoop();
 
             [contentView setNeedsDisplay:YES];
-            if (changedText != nil) {
-                // Updating a legacy BasicTextField can synchronously recompose and restart its
-                // input session. Wait until AppKit has completely unwound menu tracking and the
-                // temporary first responder has been restored before entering Compose again.
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    ambReportTextChange(changedTextCallbackId, changedText);
-                    ambWakeTaoEventLoop();
-                });
-            }
             JNIEnv *callbackEnv = ambEnv();
             if (callbackEnv != NULL && gTextBridgeClass != NULL && gTextOnDismissed != NULL) {
                 (*callbackEnv)->CallStaticVoidMethod(callbackEnv, gTextBridgeClass, gTextOnDismissed);
