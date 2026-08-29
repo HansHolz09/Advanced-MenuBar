@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.asAwtTransferable
+import androidx.compose.ui.platform.awtClipboard
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.WindowPlacement
 import com.composables.icons.materialsymbols.MaterialSymbols
@@ -226,9 +227,8 @@ fun FrameWindowScope.MenuBar(
     }
 }
 
-private fun Clipboard.hasPlainText(): Boolean =
-    (nativeClipboard as? java.awt.datatransfer.Clipboard)
-        ?.isDataFlavorAvailable(DataFlavor.stringFlavor) == true
+@OptIn(ExperimentalComposeUiApi::class)
+private fun Clipboard.hasPlainText(): Boolean = awtClipboard?.isDataFlavorAvailable(DataFlavor.stringFlavor) == true
 
 @OptIn(ExperimentalComposeUiApi::class)
 private suspend fun Clipboard.setPlainText(text: String) {
